@@ -121,6 +121,48 @@ func TestPutSameNFTOnMarket(t *testing.T) {
 
 }
 
+
+func TestPutTwoNFTOnMarket(t *testing.T) {
+	stKey := sdk.NewKVStoreKey(StoreKey)
+	ti := setupTestInput(stKey)
+	k := NewKeeper(nil, ibck.Keeper{}, stKey, ti.cdc)
+
+	account := makeAcc()
+	price := sdk.Coins{sdk.Coin{
+		"usd",
+		sdk.NewInt(100),
+	}}
+	someToken := NFT{
+		BaseNFT{
+			ID: "1234",
+		},
+		false,
+		price,
+	}
+	k.setNFTOwner(ti.ctx, someToken.BaseNFT.ID, account)
+	//put first NFT
+	err := k.PutNFTokenOnTheMarket(ti.ctx, someToken, account)
+	if err != nil {
+		t.Fatal(err)
+	}
+	nftList := k.GetNFTokens(ti.ctx)
+	if len(nftList) != 1 {
+		t.Fatal("incorrect length")
+	}
+
+	newToken := someToken
+	newToken.ID = newToken.ID + "1"
+	k.setNFTOwner(ti.ctx, newToken.ID, account)
+	err = k.PutNFTokenOnTheMarket(ti.ctx, newToken, account)
+	if err != nil {
+		t.Fatal(err)
+	}
+	nftList = k.GetNFTokens(ti.ctx)
+	if len(nftList) != 2 {
+		t.Fatal("incorrect length")
+	}
+}
+
 type testInput struct {
 	cdc *codec.Codec
 	ctx sdk.Context

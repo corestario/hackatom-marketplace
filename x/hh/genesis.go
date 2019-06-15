@@ -2,16 +2,22 @@ package hh
 
 import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
+	"github.com/cosmos/cosmos-sdk/x/auth"
+	"github.com/cosmos/cosmos-sdk/x/bank"
 	abci "github.com/tendermint/tendermint/abci/types"
 )
 
 type GenesisState struct {
 	NFTRecords []NFT `json:"nft_records"`
+	AuthData auth.GenesisState   `json:"auth"`
+	BankData bank.GenesisState   `json:"bank"`
+	Accounts []*auth.BaseAccount `json:"accounts"`
 }
 
 func NewGenesisState(nftRecords []NFT) GenesisState {
 	return GenesisState{NFTRecords: nftRecords}
 }
+
 
 func ValidateGenesis(data GenesisState) error {
 	for range data.NFTRecords {
@@ -26,10 +32,19 @@ func DefaultGenesisState() GenesisState {
 	}
 }
 
-func InitGenesis(ctx sdk.Context, keeper Keeper, data GenesisState) []abci.ValidatorUpdate {
-	for _, record := range data.NFTRecords {
+func InitGenesis(ctx sdk.Context, keeper Keeper, state GenesisState) []abci.ValidatorUpdate {
+	for _, record := range state.NFTRecords {
 		keeper.StoreNFT(ctx, record, sdk.AccAddress{})
 	}
+
+	for _, acc := range state.Accounts {
+		acc.AccountNumber = keeper.accountKeeper.GetNextAccountNumber(ctx)
+		keeper.accountKeeper.SetAccount(ctx, acc)
+	}
+
+	auth.InitGenesis(ctx, keeper.accountKeeper, keeper.feeCollectionKeeper, state.AuthData)
+	bank.InitGenesis(ctx, keeper.bankKeeper, state.BankData)
+
 	return []abci.ValidatorUpdate{}
 }
 

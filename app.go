@@ -61,6 +61,9 @@ func init() {
 // MakeCodec generates the necessary codecs for Amino
 func MakeCodec() *codec.Codec {
 	var cdc = codec.New()
+	auth.RegisterCodec(cdc)
+	bank.RegisterCodec(cdc)
+	ibck.RegisterCodec(cdc)
 	ModuleBasics.RegisterCodec(cdc)
 	sdk.RegisterCodec(cdc)
 	codec.RegisterCrypto(cdc)
@@ -201,6 +204,9 @@ func NewhhApp(logger tlog.Logger, db dbm.DB) *hhApp {
 	app.nsKeeper = hh.NewKeeper(
 		app.bankKeeper,
 		app.ibcKeeper,
+		app.accountKeeper,
+		app.bankKeeper,
+		app.feeCollectionKeeper,
 		app.keyNFT,
 		app.cdc,
 	)
@@ -258,6 +264,7 @@ func NewhhApp(logger tlog.Logger, db dbm.DB) *hhApp {
 		app.tkeyDistr,
 		app.keySlashing,
 		app.keyNFT,
+		app.keyIBCNFT,
 		app.keyParams,
 		app.tkeyParams,
 	)

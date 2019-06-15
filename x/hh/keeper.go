@@ -3,6 +3,7 @@ package hh
 import (
 	"errors"
 	"fmt"
+	"github.com/cosmos/cosmos-sdk/x/auth"
 
 	"github.com/cosmos/cosmos-sdk/codec"
 	sdk "github.com/cosmos/cosmos-sdk/types"
@@ -18,18 +19,25 @@ type Keeper struct {
 	coinKeeper bank.Keeper
 	ibcKeeper  ibck.Keeper
 
+	accountKeeper       auth.AccountKeeper
+	bankKeeper          bank.Keeper
+	feeCollectionKeeper auth.FeeCollectionKeeper
+
 	storeKey sdk.StoreKey // Unexposed key to access store from sdk.Context
 
 	cdc *codec.Codec // The wire codec for binary encoding/decoding.
 }
 
 // NewKeeper creates new instances of the hh Keeper
-func NewKeeper(coinKeeper bank.Keeper, ibcKeeper ibck.Keeper, storeKey sdk.StoreKey, cdc *codec.Codec) Keeper {
+func NewKeeper(coinKeeper bank.Keeper, ibcKeeper ibck.Keeper, accountKeeper auth.AccountKeeper, bankKeeper bank.Keeper, feeCollectionKeeper auth.FeeCollectionKeeper, storeKey sdk.StoreKey, cdc *codec.Codec) Keeper {
 	return Keeper{
-		coinKeeper: coinKeeper,
-		ibcKeeper:  ibcKeeper,
-		storeKey:   storeKey,
-		cdc:        cdc,
+		coinKeeper:          coinKeeper,
+		ibcKeeper:           ibcKeeper,
+		accountKeeper:       accountKeeper,
+		bankKeeper:          bankKeeper,
+		feeCollectionKeeper: feeCollectionKeeper,
+		storeKey:            storeKey,
+		cdc:                 cdc,
 	}
 }
 
