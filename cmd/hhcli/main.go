@@ -15,6 +15,8 @@ import (
 	"github.com/tendermint/tendermint/libs/cli"
 
 	app "dgamingfoundation/hackathon-hub"
+	hhclient "dgamingfoundation/hackathon-hub/x/hh/client"
+	nsrest "dgamingfoundation/hackathon-hub/x/hh/client/rest"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	authcmd "github.com/cosmos/cosmos-sdk/x/auth/client/cli"
@@ -53,6 +55,7 @@ func main() {
 	config.Seal()
 
 	mc := []sdk.ModuleClient{
+		hhclient.NewModuleClient(storeNS, cdc),
 		stakingclient.NewModuleClient(st.StoreKey, cdc),
 		distClient.NewModuleClient(distcmd.StoreKey, cdc),
 		slashingclient.NewModuleClient(sl.StoreKey, cdc),
@@ -96,6 +99,7 @@ func registerRoutes(rs *lcd.RestServer) {
 	tx.RegisterTxRoutes(rs.CliCtx, rs.Mux, rs.Cdc)
 	auth.RegisterRoutes(rs.CliCtx, rs.Mux, rs.Cdc, storeAcc)
 	bank.RegisterRoutes(rs.CliCtx, rs.Mux, rs.Cdc, rs.KeyBase)
+	nsrest.RegisterRoutes(rs.CliCtx, rs.Mux, rs.Cdc, storeNS)
 	staking.RegisterRoutes(rs.CliCtx, rs.Mux, rs.Cdc, rs.KeyBase)
 	dist.RegisterRoutes(rs.CliCtx, rs.Mux, rs.Cdc, distcmd.StoreKey)
 	slashing.RegisterRoutes(rs.CliCtx, rs.Mux, rs.Cdc, rs.KeyBase)
