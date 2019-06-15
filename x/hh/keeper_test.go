@@ -1,13 +1,14 @@
 package hh
 
 import (
+	"math/rand"
+	"testing"
+
 	"github.com/cosmos/cosmos-sdk/codec"
 	"github.com/cosmos/cosmos-sdk/store"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	ibck "github.com/cosmos/cosmos-sdk/x/ibc/keeper"
 	"github.com/tendermint/tendermint/crypto/ed25519"
-	"math/rand"
-	"testing"
 
 	"github.com/cosmos/cosmos-sdk/types/module"
 	abci "github.com/tendermint/tendermint/abci/types"

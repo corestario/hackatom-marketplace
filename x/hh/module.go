@@ -3,6 +3,7 @@ package hh
 import (
 	"encoding/json"
 	"fmt"
+
 	"github.com/cosmos/cosmos-sdk/client"
 	"github.com/cosmos/cosmos-sdk/client/context"
 	"github.com/gorilla/mux"
@@ -85,8 +86,8 @@ func (am AppModule) GetTxCmd(cdc *codec.Codec) *cobra.Command {
 		GetCmdTransferToken(cdc),
 	)...)
 
-
-	return hhTxCmd}
+	return hhTxCmd
+}
 
 func (am AppModule) GetQueryCmd(cdc *codec.Codec) *cobra.Command {
 	hhQueryCmd := &cobra.Command{

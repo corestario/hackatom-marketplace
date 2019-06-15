@@ -2,12 +2,12 @@ package hh
 
 import (
 	"fmt"
+	"net/http"
+
 	"github.com/cosmos/cosmos-sdk/client/flags"
 	"github.com/cosmos/cosmos-sdk/client/utils"
 	"github.com/cosmos/cosmos-sdk/types/rest"
 	"github.com/gorilla/mux"
-	"net/http"
-
 
 	"github.com/cosmos/cosmos-sdk/client/context"
 	"github.com/cosmos/cosmos-sdk/codec"
@@ -15,7 +15,6 @@ import (
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	authtxb "github.com/cosmos/cosmos-sdk/x/auth/types"
-
 )
 
 func GetCmdTokenInfo(queryRoute string, cdc *codec.Codec) *cobra.Command {
@@ -82,9 +81,6 @@ func GetCmdTransferInfo(queryRoute string, cdc *codec.Codec) *cobra.Command {
 	}
 }
 
-
-
-
 func GetCmdTransferToken(cdc *codec.Codec) *cobra.Command {
 	return &cobra.Command{
 		Use:   "transfer-token [tokenID] [zoneID] [recipient]",
@@ -113,7 +109,6 @@ func GetCmdTransferToken(cdc *codec.Codec) *cobra.Command {
 		},
 	}
 }
-
 
 const (
 	restName = "name"
@@ -171,7 +166,7 @@ func getTransferStatus(cdc *codec.Codec, cliCtx context.CLIContext, storeName st
 type putOnMarketNFTReq struct {
 	BaseReq rest.BaseReq `json:"base_req"`
 	Owner   string       `json:"owner"`
-	Token   BaseNFT   `json:"token"`
+	Token   BaseNFT      `json:"token"`
 	Price   string       `json:"price"`
 
 	// User data
