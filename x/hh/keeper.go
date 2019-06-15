@@ -89,8 +89,8 @@ func (k Keeper) BuyNFToken(ctx sdk.Context, nfTokenID string, buyer sdk.AccAddre
 		return errors.New("empty buyer")
 	}
 
-	if store.Has(composePutNFTToMarketKey(nfTokenID)) {
-		return errors.New("nft has already existed on market")
+	if !store.Has(composePutNFTToMarketKey(nfTokenID)) {
+		return errors.New("nft does not exist on market: " + nfTokenID)
 	}
 
 	tokenOwner := k.getNFTOwner(ctx, nfTokenID)
@@ -121,8 +121,10 @@ func (k Keeper) BuyNFToken(ctx sdk.Context, nfTokenID string, buyer sdk.AccAddre
 		}
 	}
 
+	fmt.Println("buyer has", buyerCoins.String())
+
 	//buy
-	errResult := k.coinKeeper.SendCoins(ctx, tokenOwner, buyer, nftOnSale.Price)
+	errResult := k.coinKeeper.SendCoins(ctx, buyer, tokenOwner, nftOnSale.Price)
 	if errResult != nil {
 		return errResult
 	}
