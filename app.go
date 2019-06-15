@@ -67,6 +67,8 @@ func MakeCodec() *codec.Codec {
 	return cdc
 }
 
+const IBCStoreKey = "ibc"
+
 type hhApp struct {
 	*bam.BaseApp
 	cdc *codec.Codec
@@ -80,6 +82,7 @@ type hhApp struct {
 	keyDistr         *sdk.KVStoreKey
 	tkeyDistr        *sdk.TransientStoreKey
 	keyNFT           *sdk.KVStoreKey
+	keyIBCNFT        *sdk.KVStoreKey
 	keyParams        *sdk.KVStoreKey
 	tkeyParams       *sdk.TransientStoreKey
 	keySlashing      *sdk.KVStoreKey
@@ -121,6 +124,7 @@ func NewhhApp(logger tlog.Logger, db dbm.DB) *hhApp {
 		keyDistr:         sdk.NewKVStoreKey(distr.StoreKey),
 		tkeyDistr:        sdk.NewTransientStoreKey(distr.TStoreKey),
 		keyNFT:           sdk.NewKVStoreKey(hh.StoreKey),
+		keyIBCNFT:        sdk.NewKVStoreKey(IBCStoreKey),
 		keyParams:        sdk.NewKVStoreKey(params.StoreKey),
 		tkeyParams:       sdk.NewTransientStoreKey(params.TStoreKey),
 		keySlashing:      sdk.NewKVStoreKey(slashing.StoreKey),
@@ -151,8 +155,7 @@ func NewhhApp(logger tlog.Logger, db dbm.DB) *hhApp {
 	)
 
 	// The IBCKeeper
-	//fixme init ibcKeeper
-	//app.ibcKeeper =  ibc.NewBankKeeper()
+	app.ibcKeeper = ibck.NewKeeper(app.cdc, app.keyIBCNFT)
 
 	// The FeeCollectionKeeper collects transaction fees and renders them to the fee distribution module
 	app.feeCollectionKeeper = auth.NewFeeCollectionKeeper(cdc, app.keyFeeCollection)

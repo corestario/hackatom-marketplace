@@ -39,7 +39,7 @@ func (k Keeper) TransferNFTokenToZone(ctx sdk.Context, nfToken NFT, zoneID strin
 	}
 
 	//fixme call transfetToZone
-	//k.ibcKeeper.TransferNFTokenToZone(nft, msg.ZoneID, msg.Sender, msg.Recipient)
+	//k.ibcKeeper.Send().TransferNFTokenToZone(nft, msg.ZoneID, msg.Sender, msg.Recipient)
 
 	k.DeleteNFT(ctx, nfToken.ID)
 	return nil
