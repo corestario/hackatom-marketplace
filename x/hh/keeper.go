@@ -29,12 +29,11 @@ type Keeper struct {
 }
 
 // NewKeeper creates new instances of the hh Keeper
-func NewKeeper(coinKeeper bank.Keeper, ibcKeeper ibck.Keeper, accountKeeper auth.AccountKeeper, bankKeeper bank.Keeper, feeCollectionKeeper auth.FeeCollectionKeeper, storeKey sdk.StoreKey, cdc *codec.Codec) Keeper {
+func NewKeeper(coinKeeper bank.Keeper, ibcKeeper ibck.Keeper, accountKeeper auth.AccountKeeper, feeCollectionKeeper auth.FeeCollectionKeeper, storeKey sdk.StoreKey, cdc *codec.Codec) Keeper {
 	return Keeper{
 		coinKeeper:          coinKeeper,
 		ibcKeeper:           ibcKeeper,
 		accountKeeper:       accountKeeper,
-		bankKeeper:          bankKeeper,
 		feeCollectionKeeper: feeCollectionKeeper,
 		storeKey:            storeKey,
 		cdc:                 cdc,

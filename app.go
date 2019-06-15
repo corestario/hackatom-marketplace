@@ -205,7 +205,6 @@ func NewhhApp(logger tlog.Logger, db dbm.DB) *hhApp {
 		app.bankKeeper,
 		app.ibcKeeper,
 		app.accountKeeper,
-		app.bankKeeper,
 		app.feeCollectionKeeper,
 		app.keyNFT,
 		app.cdc,
