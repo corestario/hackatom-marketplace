@@ -19,7 +19,7 @@ func GetCmdTokenInfo(queryRoute string, cdc *codec.Codec) *cobra.Command {
 			cliCtx := context.NewCLIContext().WithCodec(cdc)
 			tokenID := args[0]
 
-			res, err := cliCtx.QueryWithData(fmt.Sprintf("custom/%s/NFToken/%s", queryRoute, tokenID), nil)
+			res, _, err := cliCtx.QueryWithData(fmt.Sprintf("custom/%s/NFToken/%s", queryRoute, tokenID), nil)
 			if err != nil {
 				fmt.Printf("could not find tokenID - %s: %v\n", tokenID, err)
 				return nil
@@ -39,7 +39,7 @@ func GetCmdListTokens(queryRoute string, cdc *codec.Codec) *cobra.Command {
 		RunE: func(cmd *cobra.Command, args []string) error {
 			cliCtx := context.NewCLIContext().WithCodec(cdc)
 
-			res, err := cliCtx.QueryWithData(fmt.Sprintf("custom/%s/NFTokens", queryRoute), nil)
+			res, _, err := cliCtx.QueryWithData(fmt.Sprintf("custom/%s/NFTokens", queryRoute), nil)
 			if err != nil {
 				fmt.Printf("could not get token list: %v", err)
 				return nil
@@ -61,7 +61,7 @@ func GetCmdTransferInfo(queryRoute string, cdc *codec.Codec) *cobra.Command {
 			cliCtx := context.NewCLIContext().WithCodec(cdc)
 			transferID := args[0]
 
-			res, err := cliCtx.QueryWithData(fmt.Sprintf("custom/%s/Transfer/%s", queryRoute, transferID), nil)
+			res, _, err := cliCtx.QueryWithData(fmt.Sprintf("custom/%s/Transfer/%s", queryRoute, transferID), nil)
 			if err != nil {
 				fmt.Printf("could not find tokenID - %s: %v\n", transferID, err)
 				return nil

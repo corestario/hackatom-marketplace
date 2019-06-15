@@ -15,26 +15,10 @@ import (
 	"github.com/tendermint/tendermint/libs/cli"
 
 	app "dgamingfoundation/hackathon-hub"
-	hhclient "dgamingfoundation/hackathon-hub/x/hh/client"
-	nsrest "dgamingfoundation/hackathon-hub/x/hh/client/rest"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	authcmd "github.com/cosmos/cosmos-sdk/x/auth/client/cli"
-	auth "github.com/cosmos/cosmos-sdk/x/auth/client/rest"
 	bankcmd "github.com/cosmos/cosmos-sdk/x/bank/client/cli"
-	bank "github.com/cosmos/cosmos-sdk/x/bank/client/rest"
-	distcmd "github.com/cosmos/cosmos-sdk/x/distribution"
-	distClient "github.com/cosmos/cosmos-sdk/x/distribution/client"
-	dist "github.com/cosmos/cosmos-sdk/x/distribution/client/rest"
-	"github.com/cosmos/cosmos-sdk/x/mint"
-	mintclient "github.com/cosmos/cosmos-sdk/x/mint/client"
-	mintrest "github.com/cosmos/cosmos-sdk/x/mint/client/rest"
-	sl "github.com/cosmos/cosmos-sdk/x/slashing"
-	slashingclient "github.com/cosmos/cosmos-sdk/x/slashing/client"
-	slashing "github.com/cosmos/cosmos-sdk/x/slashing/client/rest"
-	st "github.com/cosmos/cosmos-sdk/x/staking"
-	stakingclient "github.com/cosmos/cosmos-sdk/x/staking/client"
-	staking "github.com/cosmos/cosmos-sdk/x/staking/client/rest"
 )
 
 const (
@@ -54,14 +38,6 @@ func main() {
 	config.SetBech32PrefixForConsensusNode(sdk.Bech32PrefixConsAddr, sdk.Bech32PrefixConsPub)
 	config.Seal()
 
-	mc := []sdk.ModuleClient{
-		hhclient.NewModuleClient(storeNS, cdc),
-		stakingclient.NewModuleClient(st.StoreKey, cdc),
-		distClient.NewModuleClient(distcmd.StoreKey, cdc),
-		slashingclient.NewModuleClient(sl.StoreKey, cdc),
-		mintclient.NewModuleClient(mint.StoreKey, cdc),
-	}
-
 	rootCmd := &cobra.Command{
 		Use:   "hhcli",
 		Short: "hh Client",
@@ -77,8 +53,8 @@ func main() {
 	rootCmd.AddCommand(
 		rpc.StatusCommand(),
 		client.ConfigCmd(app.DefaultCLIHome),
-		queryCmd(cdc, mc),
-		txCmd(cdc, mc),
+		queryCmd(cdc),
+		txCmd(cdc),
 		client.LineBreak,
 		lcd.ServeCommand(cdc, registerRoutes),
 		client.LineBreak,
@@ -94,19 +70,12 @@ func main() {
 }
 
 func registerRoutes(rs *lcd.RestServer) {
-	rs.CliCtx = rs.CliCtx.WithAccountDecoder(rs.Cdc)
 	rpc.RegisterRPCRoutes(rs.CliCtx, rs.Mux)
-	tx.RegisterTxRoutes(rs.CliCtx, rs.Mux, rs.Cdc)
-	auth.RegisterRoutes(rs.CliCtx, rs.Mux, rs.Cdc, storeAcc)
-	bank.RegisterRoutes(rs.CliCtx, rs.Mux, rs.Cdc, rs.KeyBase)
-	nsrest.RegisterRoutes(rs.CliCtx, rs.Mux, rs.Cdc, storeNS)
-	staking.RegisterRoutes(rs.CliCtx, rs.Mux, rs.Cdc, rs.KeyBase)
-	dist.RegisterRoutes(rs.CliCtx, rs.Mux, rs.Cdc, distcmd.StoreKey)
-	slashing.RegisterRoutes(rs.CliCtx, rs.Mux, rs.Cdc, rs.KeyBase)
-	mintrest.RegisterRoutes(rs.CliCtx, rs.Mux, rs.Cdc)
+	app.ModuleBasics.RegisterRESTRoutes(rs.CliCtx, rs.Mux)
+
 }
 
-func queryCmd(cdc *amino.Codec, mc []sdk.ModuleClient) *cobra.Command {
+func queryCmd(cdc *amino.Codec) *cobra.Command {
 	queryCmd := &cobra.Command{
 		Use:     "query",
 		Aliases: []string{"q"},
@@ -114,22 +83,19 @@ func queryCmd(cdc *amino.Codec, mc []sdk.ModuleClient) *cobra.Command {
 	}
 
 	queryCmd.AddCommand(
+		authcmd.GetAccountCmd(cdc),
 		rpc.ValidatorCommand(cdc),
 		rpc.BlockCommand(),
 		tx.SearchTxCmd(cdc),
 		tx.QueryTxCmd(cdc),
 		client.LineBreak,
-		authcmd.GetAccountCmd(storeAcc, cdc),
 	)
 
-	for _, m := range mc {
-		queryCmd.AddCommand(m.GetQueryCmd())
-	}
-
+	app.ModuleBasics.AddQueryCommands(queryCmd, cdc)
 	return queryCmd
 }
 
-func txCmd(cdc *amino.Codec, mc []sdk.ModuleClient) *cobra.Command {
+func txCmd(cdc *amino.Codec) *cobra.Command {
 	txCmd := &cobra.Command{
 		Use:   "tx",
 		Short: "Transactions subcommands",
@@ -140,14 +106,13 @@ func txCmd(cdc *amino.Codec, mc []sdk.ModuleClient) *cobra.Command {
 		client.LineBreak,
 		authcmd.GetSignCommand(cdc),
 		tx.GetBroadcastCommand(cdc),
+		authcmd.GetMultiSignCommand(cdc),
 		client.LineBreak,
 		tx.GetBroadcastCommand(cdc),
 		tx.GetEncodeCommand(cdc),
 	)
 
-	for _, m := range mc {
-		txCmd.AddCommand(m.GetTxCmd())
-	}
+	app.ModuleBasics.AddTxCommands(txCmd, cdc)
 
 	return txCmd
 }

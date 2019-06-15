@@ -13,7 +13,7 @@ import (
 	"github.com/cosmos/cosmos-sdk/codec"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/types/rest"
-	txbuilder "github.com/cosmos/cosmos-sdk/x/auth/client/txbuilder"
+	authtxb "github.com/cosmos/cosmos-sdk/x/auth/types"
 
 	"github.com/gorilla/mux"
 )
@@ -46,13 +46,13 @@ func getNFTHandler(cdc *codec.Codec, cliCtx context.CLIContext, storeName string
 		vars := mux.Vars(r)
 		paramType := vars[restName]
 
-		res, err := cliCtx.QueryWithData(fmt.Sprintf("custom/%s/NFToken/%s", storeName, paramType), nil)
+		res, _, err := cliCtx.QueryWithData(fmt.Sprintf("custom/%s/NFToken/%s", storeName, paramType), nil)
 		if err != nil {
 			rest.WriteErrorResponse(w, http.StatusNotFound, err.Error())
 			return
 		}
 
-		rest.PostProcessResponse(w, cdc, res, cliCtx.Indent)
+		rest.PostProcessResponse(w, cliCtx, res)
 	}
 }
 
@@ -61,13 +61,13 @@ func getNFTOnSaleListHandler(cdc *codec.Codec, cliCtx context.CLIContext, storeN
 		vars := mux.Vars(r)
 		paramType := vars[restName]
 
-		res, err := cliCtx.QueryWithData(fmt.Sprintf("custom/%s/NFTokens/%s", storeName, paramType), nil)
+		res, _, err := cliCtx.QueryWithData(fmt.Sprintf("custom/%s/NFTokens/%s", storeName, paramType), nil)
 		if err != nil {
 			rest.WriteErrorResponse(w, http.StatusNotFound, err.Error())
 			return
 		}
 
-		rest.PostProcessResponse(w, cdc, res, cliCtx.Indent)
+		rest.PostProcessResponse(w, cliCtx, res)
 	}
 }
 
@@ -76,13 +76,13 @@ func getTransferStatus(cdc *codec.Codec, cliCtx context.CLIContext, storeName st
 		vars := mux.Vars(r)
 		paramType := vars[restName]
 
-		res, err := cliCtx.QueryWithData(fmt.Sprintf("custom/%s/Transfer/%s", storeName, paramType), nil)
+		res, _, err := cliCtx.QueryWithData(fmt.Sprintf("custom/%s/Transfer/%s", storeName, paramType), nil)
 		if err != nil {
 			rest.WriteErrorResponse(w, http.StatusNotFound, err.Error())
 			return
 		}
 
-		rest.PostProcessResponse(w, cdc, res, cliCtx.Indent)
+		rest.PostProcessResponse(w, cliCtx, res)
 	}
 }
 
@@ -129,7 +129,7 @@ type buyNFTReq struct {
 	BaseReq   rest.BaseReq `json:"base_req"`
 	Owner     string       `json:"owner"`
 	NFTokenID string       `json:"token_id"`
-	Price   string       `json:"price"`
+	Price     string       `json:"price"`
 
 	// User data
 	Name     string `json:"name"`
@@ -208,7 +208,7 @@ func runPostFunction(w http.ResponseWriter, r *http.Request, cdc *codec.Codec,
 		return
 	}
 
-	txBldr := txbuilder.NewTxBuilder(
+	txBldr := authtxb.NewTxBuilder(
 		utils.GetTxEncoder(cdc), baseReq.AccountNumber, baseReq.Sequence, gas, gasAdj,
 		baseReq.Simulate, baseReq.ChainID, baseReq.Memo, baseReq.Fees, baseReq.GasPrices,
 	)
@@ -225,5 +225,5 @@ func runPostFunction(w http.ResponseWriter, r *http.Request, cdc *codec.Codec,
 		return
 	}
 
-	rest.PostProcessResponse(w, cdc, http.StatusOK, true)
+	rest.PostProcessResponse(w, cliCtx, true)
 }

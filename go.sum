@@ -1,5 +1,7 @@
 bou.ke/monkey v1.0.1/go.mod h1:FgHuK96Rv2Nlf+0u1OOVDpCMdsWyOFmeeketDHE7LIg=
 cloud.google.com/go v0.26.0/go.mod h1:aQUYkXzVsufM+DwF1aE+0xfcU+56JwCaLick0ClmMTw=
+dgamingfoundation/hackathon-hub v0.0.0-20190607132524-1c28fd2bd25c h1:PuLnuZnfuS7UqdjAzlFk0lIjYsscpihMR3QB7Ajbo7w=
+dgamingfoundation/hackathon-hub v0.0.0-20190607132524-1c28fd2bd25c/go.mod h1:wV3R0p4c9M//giULZbHb8eD2ROOViRXDuM6f/DScswY=
 github.com/BurntSushi/toml v0.3.1 h1:WXkYYl6Yr3qBf1K79EBnL4mak0OimBfB0XUf9Vl28OQ=
 github.com/BurntSushi/toml v0.3.1/go.mod h1:xHWCNGjB5oqiDr8zfno3MHue2Ht5sIBksp03qcyfWMU=
 github.com/VividCortex/gohistogram v1.0.0 h1:6+hBz+qvs0JOrrNhhmR7lFxo5sINxBCGXrdtl/UvroE=
@@ -36,6 +38,8 @@ github.com/cosmos/cosmos-sdk v0.28.2-0.20190530192633-9969ef9b19db h1:qNHzDPe7op
 github.com/cosmos/cosmos-sdk v0.28.2-0.20190530192633-9969ef9b19db/go.mod h1:No7UW0JgQnogs4W0jPetEH8s0gZHvqAr3sRmzyuf0i0=
 github.com/cosmos/cosmos-sdk v0.28.2-0.20190604125914-75de63ce3166 h1:hcRSl6aaZH/1JASS5fnj1FXBCbeSpkTQR9N8NuLiAxI=
 github.com/cosmos/cosmos-sdk v0.28.2-0.20190604125914-75de63ce3166/go.mod h1:BvyNPEYewihHQa092/+OEX5dgLZsV7H2boKkkj1H2wI=
+github.com/cosmos/cosmos-sdk v0.28.2-0.20190615115749-95b946b4559a h1:ABf82UAvAD0zj6riPzZNue2nijTwR2l1i6ilrl5xEGI=
+github.com/cosmos/cosmos-sdk v0.28.2-0.20190615115749-95b946b4559a/go.mod h1:MvaJDmjgAK7X1rTnpk8+c6tUFfIZ++iuNCp2sUWzprM=
 github.com/cosmos/cosmos-sdk v0.34.5 h1:xAqgHUZxd1pikqUHHxVbrn0tyvUcxRig+PU7W4k2fy4=
 github.com/cosmos/cosmos-sdk v0.34.5/go.mod h1:ruF+G4D7hRf34uzZQvf/SIja9fsIThU5D7GirwTMQ9I=
 github.com/cosmos/cosmos-sdk v0.35.0 h1:EPeie1aKHwnXtTzKggvabG7aAPN+DDmju2xquvjFwao=
@@ -45,8 +49,6 @@ github.com/cosmos/ledger-cosmos-go v0.10.3 h1:Qhi5yTR5Pg1CaTpd00pxlGwNl4sFRdtK1J
 github.com/cosmos/ledger-cosmos-go v0.10.3/go.mod h1:J8//BsAGTo3OC/vDLjMRFLW6q0WAaXvHnVc7ZmE8iUY=
 github.com/cosmos/ledger-go v0.9.2 h1:Nnao/dLwaVTk1Q5U9THldpUMMXU94BOTWPddSmVB6pI=
 github.com/cosmos/ledger-go v0.9.2/go.mod h1:oZJ2hHAZROdlHiwTg4t7kP+GKIIkBT+o6c9QWFanOyI=
-dgamingfoundation/hackathon-hub v0.0.0-20190607132524-1c28fd2bd25c h1:PuLnuZnfuS7UqdjAzlFk0lIjYsscpihMR3QB7Ajbo7w=
-dgamingfoundation/hackathon-hub v0.0.0-20190607132524-1c28fd2bd25c/go.mod h1:wV3R0p4c9M//giULZbHb8eD2ROOViRXDuM6f/DScswY=
 github.com/davecgh/go-spew v0.0.0-20171005155431-ecdeabc65495/go.mod h1:J7Y8YcW2NihsgmVo/mv3lAwl/skON4iLHjSsI+c5H38=
 github.com/davecgh/go-spew v1.1.0/go.mod h1:J7Y8YcW2NihsgmVo/mv3lAwl/skON4iLHjSsI+c5H38=
 github.com/davecgh/go-spew v1.1.1 h1:vj9j/u1bqnvCEfJOwUhtlOARqs3+rkHYY13jYWTU97c=

@@ -2,19 +2,23 @@ package hh
 
 import (
 	"encoding/json"
+	"github.com/cosmos/cosmos-sdk/client/context"
+	"github.com/gorilla/mux"
+	"github.com/spf13/cobra"
 
 	"github.com/cosmos/cosmos-sdk/codec"
 	"github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/x/bank"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
+	"github.com/cosmos/cosmos-sdk/types/module"
 	abci "github.com/tendermint/tendermint/abci/types"
 )
 
 // type check to ensure the interface is properly implemented
 var (
-	_ sdk.AppModule      = AppModule{}
-	_ sdk.AppModuleBasic = AppModuleBasic{}
+	_ module.AppModule      = AppModule{}
+	_ module.AppModuleBasic = AppModuleBasic{}
 )
 
 const ModuleName = "hh"
@@ -51,6 +55,34 @@ type AppModule struct {
 	coinKeeper bank.Keeper
 }
 
+func (am AppModule) RegisterRESTRoutes(context.CLIContext, *mux.Router) {
+	//panic("implement me")
+}
+
+func (am AppModule) GetTxCmd(*codec.Codec) *cobra.Command {
+	//panic("implement me")
+	return nil
+}
+
+func (am AppModule) GetQueryCmd(*codec.Codec) *cobra.Command {
+	//panic("implement me")
+	return nil
+}
+
+func (AppModuleBasic) RegisterRESTRoutes(context.CLIContext, *mux.Router) {
+	//panic("implement me")
+}
+
+func (AppModuleBasic) GetTxCmd(*codec.Codec) *cobra.Command {
+	//panic("implement me")
+	return nil
+}
+
+func (AppModuleBasic) GetQueryCmd(*codec.Codec) *cobra.Command {
+	//panic("implement me")
+	return nil
+}
+
 // NewAppModule creates a new AppModule Object
 func NewAppModule(k Keeper, bankKeeper bank.Keeper) AppModule {
 	return AppModule{
@@ -64,7 +96,7 @@ func (AppModule) Name() string {
 	return ModuleName
 }
 
-func (am AppModule) RegisterInvariants(ir sdk.InvariantRouter) {}
+func (am AppModule) RegisterInvariants(ir sdk.InvariantRegistry) {}
 
 func (am AppModule) Route() string {
 	return RouterKey

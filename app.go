@@ -2,6 +2,7 @@ package app
 
 import (
 	"encoding/json"
+	"github.com/cosmos/cosmos-sdk/types/module"
 	"os"
 
 	tmtypes "github.com/tendermint/tendermint/types"
@@ -38,12 +39,12 @@ var (
 	DefaultNodeHome = os.ExpandEnv("$HOME/.hhd")
 
 	// ModuleBasicManager is in charge of setting up basic module elemnets
-	ModuleBasics sdk.ModuleBasicManager
+	ModuleBasics module.BasicManager
 )
 
 // maintains independent module functionality
 func init() {
-	ModuleBasics = sdk.NewModuleBasicManager(
+	ModuleBasics = module.NewBasicManager(
 		genaccounts.AppModuleBasic{},
 		genutil.AppModuleBasic{},
 		auth.AppModuleBasic{},
@@ -93,7 +94,7 @@ type hhApp struct {
 	nsKeeper            hh.Keeper
 
 	// Module Manager
-	mm *sdk.ModuleManager
+	mm *module.Manager
 }
 
 // NewhhApp is a constructor function for hhApp
@@ -194,7 +195,7 @@ func NewhhApp(logger tlog.Logger, db dbm.DB) *hhApp {
 		app.cdc,
 	)
 
-	app.mm = sdk.NewModuleManager(
+	app.mm = module.NewManager(
 		genaccounts.NewAppModule(app.accountKeeper),
 		genutil.NewAppModule(app.accountKeeper, app.stakingKeeper, app.BaseApp.DeliverTx),
 		auth.NewAppModule(app.accountKeeper, app.feeCollectionKeeper),

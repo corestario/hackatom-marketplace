@@ -12,7 +12,7 @@ import (
 	"github.com/cosmos/cosmos-sdk/codec"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	authtxb "github.com/cosmos/cosmos-sdk/x/auth/client/txbuilder"
+	authtxb "github.com/cosmos/cosmos-sdk/x/auth/types"
 )
 
 func GetCmdTransferToken(cdc *codec.Codec) *cobra.Command {
