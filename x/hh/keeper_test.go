@@ -15,12 +15,12 @@ import (
 
 var ModuleBasics sdk.ModuleBasicManager
 
-//func init() {
-//
-//	ModuleBasics = sdk.NewModuleBasicManager(
-//		AppModule{},
-//	)
-//}
+func init() {
+
+	ModuleBasics = sdk.NewModuleBasicManager(
+		AppModule{},
+	)
+}
 
 func MakeCodec() *codec.Codec {
 	var cdc = codec.New()
@@ -43,9 +43,9 @@ func TestPutTwoNFTOnMarket(t *testing.T) {
 	k := NewKeeper(nil, stKey, ti.cdc)
 
 	account := makeAcc()
-	someToken := NFT {
+	someToken := NFT{
 		BaseNFT{
-			ID:"1234",
+			ID: "1234",
 		},
 		false,
 		nil,
@@ -66,7 +66,7 @@ func TestPutTwoNFTOnMarket(t *testing.T) {
 	}
 
 	newToken := someToken
-	newToken.ID=newToken.ID+"1"
+	newToken.ID = newToken.ID + "1"
 	k.setNFTOwner(ti.ctx, newToken.ID, account)
 	err = k.PutNFTokenOnTheMarket(ti.ctx, newToken.BaseNFT, sdk.Coins{sdk.Coin{
 		"usd",
@@ -85,9 +85,9 @@ func TestPutSameNFTOnMarket(t *testing.T) {
 	stKey := sdk.NewKVStoreKey(StoreKey)
 	ti := setupTestInput(stKey)
 	k := NewKeeper(nil, stKey, ti.cdc)
-	someToken := NFT {
+	someToken := NFT{
 		BaseNFT{
-			ID:"1234",
+			ID: "1234",
 		},
 		false,
 		nil,

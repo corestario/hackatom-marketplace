@@ -3,6 +3,7 @@ package hh
 import (
 	"encoding/json"
 	"errors"
+	"fmt"
 	"github.com/cosmos/cosmos-sdk/codec"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/x/bank"
@@ -120,7 +121,7 @@ func (k Keeper) GetNFTokensOnSaleList(ctx sdk.Context) []NFT {
 		var price sdk.Coins
 		err := json.Unmarshal(it.Value(), &price)
 		if err != nil {
-			continue
+			fmt.Println("json.Unmarshal err", err)
 		}
 		nftList = append(nftList, NFT{
 			BaseNFT: BaseNFT{
