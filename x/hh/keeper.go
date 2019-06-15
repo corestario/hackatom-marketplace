@@ -7,7 +7,6 @@ import (
 	"github.com/cosmos/cosmos-sdk/codec"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/x/bank"
-	"strings"
 )
 
 // StoreKey to be used when creating the KVStore
@@ -171,18 +170,14 @@ func (k Keeper) GetNFTokensOnSaleList(ctx sdk.Context) []NFT {
 			break
 		}
 
-		var price sdk.Coins
 		fmt.Println(string(it.Value()))
-		err := json.Unmarshal(it.Value(), &price)
+
+		var nftoken NFT
+		err := json.Unmarshal(it.Value(), &nftoken)
 		if err != nil {
 			continue
 		}
-		nftList = append(nftList, NFT{
-			BaseNFT: BaseNFT{
-				ID: strings.TrimPrefix(string(it.Key()), markerPrefix),
-			},
-			Price: price,
-		})
+
 		it.Next()
 	}
 	return nftList
