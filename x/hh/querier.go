@@ -49,13 +49,7 @@ func queryNFToken(ctx sdk.Context, path []string, req abci.RequestQuery, keeper 
 }
 
 func queryNFTokens(ctx sdk.Context, req abci.RequestQuery, keeper Keeper) (res []byte, err sdk.Error) {
-	iterator := keeper.GetNFTokens(ctx)
-	var tokens QueryResNFTokens
-	for ; iterator.Valid(); iterator.Next() {
-		var token NFT
-		keeper.cdc.MustUnmarshalBinaryBare(iterator.Value(), &token)
-		tokens = append(tokens, &token)
-	}
+	tokens := QueryResNFTokens(keeper.GetNFTokens(ctx))
 
 	bz, err2 := codec.MarshalJSONIndent(keeper.cdc, tokens)
 	if err2 != nil {
@@ -65,7 +59,7 @@ func queryNFTokens(ctx sdk.Context, req abci.RequestQuery, keeper Keeper) (res [
 	return bz, nil
 }
 
-type QueryResNFTokens []*NFT
+type QueryResNFTokens []NFT
 
 func (m QueryResNFTokens) String() string {
 	var out []string

@@ -1,7 +1,6 @@
 package hh
 
 import (
-	"encoding/json"
 	"errors"
 	"fmt"
 	"github.com/cosmos/cosmos-sdk/codec"
@@ -157,12 +156,7 @@ func (k Keeper) GetNFToken(ctx sdk.Context, tokenID string) *NFT {
 	return nftOnSale
 }
 
-func (k Keeper) GetNFTokens(ctx sdk.Context) sdk.Iterator {
-	// TODO: implement.
-	return nil
-}
-
-func (k Keeper) GetNFTokensOnSaleList(ctx sdk.Context) []NFT {
+func (k Keeper) GetNFTokens(ctx sdk.Context) []NFT {
 	it := k.GetNFTIterator(ctx)
 	var nftList []NFT
 	for {
@@ -173,10 +167,9 @@ func (k Keeper) GetNFTokensOnSaleList(ctx sdk.Context) []NFT {
 		fmt.Println(string(it.Value()))
 
 		var nftoken NFT
-		err := json.Unmarshal(it.Value(), &nftoken)
-		if err != nil {
-			continue
-		}
+		k.cdc.MustUnmarshalBinaryBare(it.Value(), &nftoken)
+
+		nftList = append(nftList, nftoken)
 
 		it.Next()
 	}

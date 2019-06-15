@@ -60,7 +60,7 @@ func TestPutTwoNFTOnMarket(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	nftList := k.GetNFTokensOnSaleList(ti.ctx)
+	nftList := k.GetNFTokens(ti.ctx)
 	if len(nftList) != 1 {
 		t.Fatal("incorrect length")
 	}
@@ -75,7 +75,7 @@ func TestPutTwoNFTOnMarket(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	nftList = k.GetNFTokensOnSaleList(ti.ctx)
+	nftList = k.GetNFTokens(ti.ctx)
 	if len(nftList) != 2 {
 		t.Fatal("incorrect length")
 	}
@@ -105,7 +105,7 @@ func TestPutSameNFTOnMarket(t *testing.T) {
 		t.Fatal(err)
 	}
 
-	nftList := k.GetNFTokensOnSaleList(ti.ctx)
+	nftList := k.GetNFTokens(ti.ctx)
 	if len(nftList) != 1 {
 		t.Fatal("incorrect length")
 	}
@@ -117,7 +117,7 @@ func TestPutSameNFTOnMarket(t *testing.T) {
 	if err == nil {
 		t.FailNow()
 	}
-	nftList = k.GetNFTokensOnSaleList(ti.ctx)
+	nftList = k.GetNFTokens(ti.ctx)
 	if len(nftList) != 1 {
 		t.Fatal("incorrect length")
 	}
