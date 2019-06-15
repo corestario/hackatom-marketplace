@@ -13,7 +13,7 @@ A cosmos zone with built-in simplistic NFT marketplace and IBC connectivity. The
 7. MakeDeposit(Amount) Status // Currency faucet
 
 
-General scenario:
+## General scenario
 
 User X makes a token in Zone A. User makes a "transfer and set price" IBC transactions to benefit from atomic fire-n-forget UI for selling NFTs.
 
