@@ -12,7 +12,6 @@ import (
 const (
 	QueryNFToken  = "NFToken"
 	QueryNFTokens = "NFTokens"
-	QueryTransfer = "Transfer"
 )
 
 // NewQuerier is the module level router for state queries
