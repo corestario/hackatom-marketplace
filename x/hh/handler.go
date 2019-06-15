@@ -24,12 +24,17 @@ func NewHandler(keeper Keeper) sdk.Handler {
 }
 
 func handleMsgTransferNFTokenToZone(ctx sdk.Context, keeper Keeper, msg MsgTransferNFTokenToZone) sdk.Result {
-	// TODO: implement.
+	nft := keeper.GetNFToken(ctx, msg.TokenID)
+
+	err := keeper.TransferNFTokenToZone(ctx, *nft, msg.ZoneID, msg.Sender, msg.Recipient)
+	if err != nil {
+		return sdk.ErrInternal(err.Error()).Result()
+	}
 	return sdk.Result{}
 }
 
 func handleMsgPutNFTokenOnTheMarket(ctx sdk.Context, keeper Keeper, msg MsgPutNFTokenOnTheMarket) sdk.Result {
-	err := keeper.PutNFTokenOnTheMarket(ctx, msg.Token, msg.Price, msg.Sender)
+	err := keeper.PutNFTokenOnTheMarket(ctx, msg.Token, msg.Sender)
 	if err != nil {
 		return sdk.ErrInternal(err.Error()).Result()
 	}
@@ -37,6 +42,9 @@ func handleMsgPutNFTokenOnTheMarket(ctx sdk.Context, keeper Keeper, msg MsgPutNF
 }
 
 func handleMsgBuyNFToken(ctx sdk.Context, keeper Keeper, msg MsgBuyNFToken) sdk.Result {
-	// TODO: implement.
+	err := keeper.BuyNFToken(ctx, msg.NFTokenID, msg.Sender)
+	if err != nil {
+		return sdk.ErrInternal(err.Error()).Result()
+	}
 	return sdk.Result{}
 }

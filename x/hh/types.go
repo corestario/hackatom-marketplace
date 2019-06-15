@@ -51,12 +51,6 @@ type NFT struct {
 	Price  sdk.Coins `json:"price"`
 }
 
-func NewNFT(ID string, owner sdk.AccAddress, tokenURI, description, image, name string) *NFT {
-	return &NFT{
-		BaseNFT: NewBaseNFT(ID, owner, tokenURI, description, image, name),
-	}
-}
-
 func (m NFT) String() string {
 	return fmt.Sprintf(`
 %s
