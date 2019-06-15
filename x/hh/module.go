@@ -2,6 +2,8 @@ package hh
 
 import (
 	"encoding/json"
+	"fmt"
+	"github.com/cosmos/cosmos-sdk/client"
 	"github.com/cosmos/cosmos-sdk/client/context"
 	"github.com/gorilla/mux"
 	"github.com/spf13/cobra"
@@ -55,26 +57,55 @@ type AppModule struct {
 	coinKeeper bank.Keeper
 }
 
-func (am AppModule) RegisterRESTRoutes(context.CLIContext, *mux.Router) {
-	//panic("implement me")
+func (am AppModule) RegisterRESTRoutes(cliCtx context.CLIContext, r *mux.Router) {
+	// GetNFTokenData(TokenID) TokenData // Получить информацию о токене
+	r.HandleFunc(fmt.Sprintf("/%s/nft/{%s}", ModuleName, restName), getNFTHandler(cliCtx.Codec, cliCtx, ModuleName)).Methods("GET")
+	// GetNFTokensOnSaleList() []TokenData // Возвращает список продающихся токенов с ценами
+	r.HandleFunc(fmt.Sprintf("/%s/nft/list/{%s}/", ModuleName, restName), getNFTOnSaleListHandler(cliCtx.Codec, cliCtx, ModuleName)).Methods("GET")
+
+	// TransferNFTokenToZone(ZoneID, TokenID) TransferID // Передаёт токен на соседнуюю зону (напр. зону выпуска токенов), но не выставляет на продажу
+	r.HandleFunc(fmt.Sprintf("/%s/nft/transfer", ModuleName), transferNFTokenToZone(cliCtx.Codec, cliCtx)).Methods("POST")
+
+	// GetTransferStatus(TransferID) Status возвращает статус трансфера - в процессе, прилетел, ошибка
+	r.HandleFunc(fmt.Sprintf("/%s/nft/transfer/{%s}", ModuleName, restName), getTransferStatus(cliCtx.Codec, cliCtx, ModuleName)).Methods("GET")
+
+	// BuyNFToken(TokenID) Status // Меняет владельца токена, меняет статус токена на непродаваемый, переводит деньги (с комиссией) бывшему владельцу токена
+	r.HandleFunc(fmt.Sprintf("/%s/nft/buy", ModuleName), buyNFToken(cliCtx.Codec, cliCtx)).Methods("POST")
+	// PutNFTokenOnTheMarket(TokenID, Price) Status // Меняет статус токена на продаваемый, устанавливает цену
+	r.HandleFunc(fmt.Sprintf("/%s/nft/sell", ModuleName), putNFTokenOnTheMarket(cliCtx.Codec, cliCtx)).Methods("POST")
 }
 
-func (am AppModule) GetTxCmd(*codec.Codec) *cobra.Command {
-	//panic("implement me")
-	return nil
+func (am AppModule) GetTxCmd(cdc *codec.Codec) *cobra.Command {
+	hhTxCmd := &cobra.Command{
+		Use:   "hh",
+		Short: "hh transactions subcommands",
+	}
+
+	hhTxCmd.AddCommand(client.PostCommands(
+		GetCmdTransferToken(cdc),
+	)...)
+
+
+	return hhTxCmd}
+
+func (am AppModule) GetQueryCmd(cdc *codec.Codec) *cobra.Command {
+	hhQueryCmd := &cobra.Command{
+		Use:   "hh",
+		Short: "Querying commands for the hh module",
+	}
+	hhQueryCmd.AddCommand(client.GetCommands(
+		GetCmdTokenInfo(ModuleName, cdc),
+		GetCmdListTokens(ModuleName, cdc),
+		GetCmdTransferInfo(ModuleName, cdc),
+	)...)
+
+	return hhQueryCmd
 }
 
-func (am AppModule) GetQueryCmd(*codec.Codec) *cobra.Command {
-	//panic("implement me")
-	return nil
+func (AppModuleBasic) RegisterRESTRoutes(cliCtx context.CLIContext, r *mux.Router) {
 }
 
-func (AppModuleBasic) RegisterRESTRoutes(context.CLIContext, *mux.Router) {
-	//panic("implement me")
-}
-
-func (AppModuleBasic) GetTxCmd(*codec.Codec) *cobra.Command {
-	//panic("implement me")
+func (AppModuleBasic) GetTxCmd(cdc *codec.Codec) *cobra.Command {
 	return nil
 }
 

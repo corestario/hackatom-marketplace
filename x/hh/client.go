@@ -1,22 +1,119 @@
-package rest
+package hh
 
 import (
 	"fmt"
 	"github.com/cosmos/cosmos-sdk/client/flags"
 	"github.com/cosmos/cosmos-sdk/client/utils"
+	"github.com/cosmos/cosmos-sdk/types/rest"
+	"github.com/gorilla/mux"
 	"net/http"
 
-	"dgamingfoundation/hackathon-hub/x/hh"
 
 	"github.com/cosmos/cosmos-sdk/client/context"
-
 	"github.com/cosmos/cosmos-sdk/codec"
+	"github.com/spf13/cobra"
+
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	"github.com/cosmos/cosmos-sdk/types/rest"
 	authtxb "github.com/cosmos/cosmos-sdk/x/auth/types"
 
-	"github.com/gorilla/mux"
 )
+
+func GetCmdTokenInfo(queryRoute string, cdc *codec.Codec) *cobra.Command {
+	return &cobra.Command{
+		Use:   "token-info [id]",
+		Short: "See token data by id",
+		Args:  cobra.ExactArgs(1),
+		RunE: func(cmd *cobra.Command, args []string) error {
+			cliCtx := context.NewCLIContext().WithCodec(cdc)
+			tokenID := args[0]
+
+			res, _, err := cliCtx.QueryWithData(fmt.Sprintf("custom/%s/NFToken/%s", queryRoute, tokenID), nil)
+			if err != nil {
+				fmt.Printf("could not find tokenID - %s: %v\n", tokenID, err)
+				return nil
+			}
+
+			var out NFT
+			cdc.MustUnmarshalJSON(res, &out)
+			return cliCtx.PrintOutput(out)
+		},
+	}
+}
+
+func GetCmdListTokens(queryRoute string, cdc *codec.Codec) *cobra.Command {
+	return &cobra.Command{
+		Use:   "token-list",
+		Short: "See token list",
+		RunE: func(cmd *cobra.Command, args []string) error {
+			cliCtx := context.NewCLIContext().WithCodec(cdc)
+
+			res, _, err := cliCtx.QueryWithData(fmt.Sprintf("custom/%s/NFTokens", queryRoute), nil)
+			if err != nil {
+				fmt.Printf("could not get token list: %v", err)
+				return nil
+			}
+
+			var out QueryResNFTokens
+			cdc.MustUnmarshalJSON(res, &out)
+			return cliCtx.PrintOutput(out)
+		},
+	}
+}
+
+func GetCmdTransferInfo(queryRoute string, cdc *codec.Codec) *cobra.Command {
+	return &cobra.Command{
+		Use:   "token-transfer [id]",
+		Short: "token transfer by id",
+		Args:  cobra.ExactArgs(1),
+		RunE: func(cmd *cobra.Command, args []string) error {
+			cliCtx := context.NewCLIContext().WithCodec(cdc)
+			transferID := args[0]
+
+			res, _, err := cliCtx.QueryWithData(fmt.Sprintf("custom/%s/Transfer/%s", queryRoute, transferID), nil)
+			if err != nil {
+				fmt.Printf("could not find tokenID - %s: %v\n", transferID, err)
+				return nil
+			}
+
+			var out Transfer
+			cdc.MustUnmarshalJSON(res, &out)
+			return cliCtx.PrintOutput(out)
+		},
+	}
+}
+
+
+
+
+func GetCmdTransferToken(cdc *codec.Codec) *cobra.Command {
+	return &cobra.Command{
+		Use:   "transfer-token [tokenID] [zoneID] [recipient]",
+		Short: "bid for existing name or claim new name",
+		Args:  cobra.ExactArgs(3),
+		RunE: func(cmd *cobra.Command, args []string) error {
+			cliCtx := context.NewCLIContext().WithCodec(cdc).WithAccountDecoder(cdc)
+			txBldr := authtxb.NewTxBuilderFromCLI().WithTxEncoder(utils.GetTxEncoder(cdc))
+			if err := cliCtx.EnsureAccountExists(); err != nil {
+				return err
+			}
+
+			recipient, err := sdk.AccAddressFromHex(args[2])
+			if err != nil {
+				return fmt.Errorf("failed to parse recipient address: %v", err)
+			}
+
+			msg := NewMsgTransferNFTokenToZone(args[0], args[1], cliCtx.GetFromAddress(), recipient)
+			if err = msg.ValidateBasic(); err != nil {
+				return err
+			}
+
+			cliCtx.PrintResponse = true
+
+			return utils.GenerateOrBroadcastMsgs(cliCtx, txBldr, []sdk.Msg{msg})
+		},
+	}
+}
+
 
 const (
 	restName = "name"
@@ -24,21 +121,6 @@ const (
 
 // RegisterRoutes - Central function to define routes that get registered by the main application
 func RegisterRoutes(cliCtx context.CLIContext, r *mux.Router, cdc *codec.Codec, storeName string) {
-	// GetNFTokenData(TokenID) TokenData // Получить информацию о токене
-	r.HandleFunc(fmt.Sprintf("/%s/nft/{%s}", storeName, restName), getNFTHandler(cdc, cliCtx, storeName)).Methods("GET")
-	// GetNFTokensOnSaleList() []TokenData // Возвращает список продающихся токенов с ценами
-	r.HandleFunc(fmt.Sprintf("/%s/nft/list/{%s}/", storeName, restName), getNFTOnSaleListHandler(cdc, cliCtx, storeName)).Methods("GET")
-
-	// TransferNFTokenToZone(ZoneID, TokenID) TransferID // Передаёт токен на соседнуюю зону (напр. зону выпуска токенов), но не выставляет на продажу
-	r.HandleFunc(fmt.Sprintf("/%s/nft/transfer", storeName), transferNFTokenToZone(cdc, cliCtx)).Methods("POST")
-
-	// GetTransferStatus(TransferID) Status возвращает статус трансфера - в процессе, прилетел, ошибка
-	r.HandleFunc(fmt.Sprintf("/%s/nft/transfer/{%s}", storeName, restName), getTransferStatus(cdc, cliCtx, storeName)).Methods("GET")
-
-	// BuyNFToken(TokenID) Status // Меняет владельца токена, меняет статус токена на непродаваемый, переводит деньги (с комиссией) бывшему владельцу токена
-	r.HandleFunc(fmt.Sprintf("/%s/nft/buy", storeName), buyNFToken(cdc, cliCtx)).Methods("POST")
-	// PutNFTokenOnTheMarket(TokenID, Price) Status // Меняет статус токена на продаваемый, устанавливает цену
-	r.HandleFunc(fmt.Sprintf("/%s/nft/sell", storeName), putNFTokenOnTheMarket(cdc, cliCtx)).Methods("POST")
 }
 
 func getNFTHandler(cdc *codec.Codec, cliCtx context.CLIContext, storeName string) http.HandlerFunc {
@@ -89,7 +171,7 @@ func getTransferStatus(cdc *codec.Codec, cliCtx context.CLIContext, storeName st
 type putOnMarketNFTReq struct {
 	BaseReq rest.BaseReq `json:"base_req"`
 	Owner   string       `json:"owner"`
-	Token   hh.BaseNFT   `json:"token"`
+	Token   BaseNFT   `json:"token"`
 	Price   string       `json:"price"`
 
 	// User data
@@ -107,10 +189,10 @@ func putNFTokenOnTheMarket(cdc *codec.Codec, cliCtx context.CLIContext) http.Han
 			return
 		}
 
-		nftToken := hh.NFT{req.Token, true, priceInCoins}
+		nftToken := NFT{req.Token, true, priceInCoins}
 
 		runPostFunction(w, r, cdc, cliCtx, req.BaseReq, &req, req.Name, req.Password, req.Owner, func(addr sdk.AccAddress) sdk.Msg {
-			return hh.NewMsgPutNFTokenOnTheMarket(nftToken, addr)
+			return NewMsgPutNFTokenOnTheMarket(nftToken, addr)
 		})
 	}
 }
@@ -149,7 +231,7 @@ func transferNFTokenToZone(cdc *codec.Codec, cliCtx context.CLIContext) http.Han
 		}
 
 		runPostFunction(w, r, cdc, cliCtx, req.BaseReq, &req, req.Name, req.Password, req.Owner, func(sender sdk.AccAddress) sdk.Msg {
-			return hh.NewMsgTransferNFTokenToZone(req.NFTokenID, req.ZoneID, sender, recipient)
+			return NewMsgTransferNFTokenToZone(req.NFTokenID, req.ZoneID, sender, recipient)
 		})
 	}
 }
@@ -165,7 +247,7 @@ func buyNFToken(cdc *codec.Codec, cliCtx context.CLIContext) http.HandlerFunc {
 		}
 
 		runPostFunction(w, r, cdc, cliCtx, req.BaseReq, &req, req.Name, req.Password, req.Owner, func(addr sdk.AccAddress) sdk.Msg {
-			return hh.NewMsgBuyNFToken(req.NFTokenID, priceInCoins, addr)
+			return NewMsgBuyNFToken(req.NFTokenID, priceInCoins, addr)
 		})
 	}
 }

@@ -231,6 +231,7 @@ func NewhhApp(logger tlog.Logger, db dbm.DB) *hhApp {
 	// register all module routes and module queriers
 	app.mm.RegisterRoutes(app.Router(), app.QueryRouter())
 
+
 	// The initChainer handles translating the genesis.json file into initial state for the network
 	app.SetInitChainer(app.InitChainer)
 	app.SetBeginBlocker(app.BeginBlocker)
