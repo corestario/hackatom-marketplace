@@ -43,20 +43,20 @@ func TestPutTwoNFTOnMarket(t *testing.T) {
 	k := NewKeeper(nil, stKey, ti.cdc)
 
 	account := makeAcc()
+	price := sdk.Coins{sdk.Coin{
+		"usd",
+		sdk.NewInt(100),
+	}}
 	someToken := NFT {
 		BaseNFT{
 			ID:"1234",
 		},
 		false,
-		nil,
+		price,
 	}
-	price := sdk.Coins{sdk.Coin{
-		"usd",
-		sdk.NewInt(100),
-	}}
 	k.setNFTOwner(ti.ctx, someToken.BaseNFT.ID, account)
 	//put first NFT
-	err := k.PutNFTokenOnTheMarket(ti.ctx, someToken.BaseNFT, price, account)
+	err := k.PutNFTokenOnTheMarket(ti.ctx, someToken, account)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -68,10 +68,7 @@ func TestPutTwoNFTOnMarket(t *testing.T) {
 	newToken := someToken
 	newToken.ID=newToken.ID+"1"
 	k.setNFTOwner(ti.ctx, newToken.ID, account)
-	err = k.PutNFTokenOnTheMarket(ti.ctx, newToken.BaseNFT, sdk.Coins{sdk.Coin{
-		"usd",
-		sdk.NewInt(150),
-	}}, account)
+	err = k.PutNFTokenOnTheMarket(ti.ctx, newToken, account)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -85,22 +82,22 @@ func TestPutSameNFTOnMarket(t *testing.T) {
 	stKey := sdk.NewKVStoreKey(StoreKey)
 	ti := setupTestInput(stKey)
 	k := NewKeeper(nil, stKey, ti.cdc)
-	someToken := NFT {
-		BaseNFT{
-			ID:"1234",
-		},
-		false,
-		nil,
-	}
 
 	price := sdk.Coins{sdk.Coin{
 		"usd",
 		sdk.NewInt(100),
 	}}
+	someToken := NFT {
+		BaseNFT{
+			ID:"1234",
+		},
+		false,
+		price,
+	}
 	account := makeAcc()
 	k.setNFTOwner(ti.ctx, someToken.ID, account)
 	//put first NFT
-	err := k.PutNFTokenOnTheMarket(ti.ctx, someToken.BaseNFT, price, account)
+	err := k.PutNFTokenOnTheMarket(ti.ctx, someToken, account)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -110,10 +107,7 @@ func TestPutSameNFTOnMarket(t *testing.T) {
 		t.Fatal("incorrect length")
 	}
 
-	err = k.PutNFTokenOnTheMarket(ti.ctx, someToken.BaseNFT, sdk.Coins{sdk.Coin{
-		"usd",
-		sdk.NewInt(150),
-	}}, sdk.AccAddress{})
+	err = k.PutNFTokenOnTheMarket(ti.ctx, someToken, sdk.AccAddress{})
 	if err == nil {
 		t.FailNow()
 	}

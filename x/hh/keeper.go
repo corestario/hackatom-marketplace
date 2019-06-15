@@ -175,10 +175,10 @@ func (k Keeper) GetNFTokens(ctx sdk.Context) []NFT {
 			break
 		}
 
-		fmt.Println(string(it.Value()))
-
 		var nftoken NFT
 		k.cdc.MustUnmarshalBinaryBare(it.Value(), &nftoken)
+
+		fmt.Println(nftoken)
 
 		nftList = append(nftList, nftoken)
 
