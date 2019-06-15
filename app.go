@@ -3,7 +3,7 @@ package app
 import (
 	"encoding/json"
 	"github.com/cosmos/cosmos-sdk/types/module"
-	"github.com/cosmos/cosmos-sdk/x/ibc"
+	ibck "github.com/cosmos/cosmos-sdk/x/ibc/keeper"
 	"os"
 
 	tmtypes "github.com/tendermint/tendermint/types"
@@ -87,7 +87,7 @@ type hhApp struct {
 	// Keepers
 	accountKeeper       auth.AccountKeeper
 	bankKeeper          bank.Keeper
-	ibcKeeper           ibc.BankKeeper
+	ibcKeeper           ibck.Keeper
 	stakingKeeper       staking.Keeper
 	slashingKeeper      slashing.Keeper
 	distrKeeper         distr.Keeper

@@ -6,7 +6,7 @@ import (
 	"github.com/cosmos/cosmos-sdk/codec"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/x/bank"
-	"github.com/cosmos/cosmos-sdk/x/ibc"
+	ibck "github.com/cosmos/cosmos-sdk/x/ibc/keeper"
 )
 
 // StoreKey to be used when creating the KVStore
@@ -15,7 +15,7 @@ const StoreKey = "hh"
 // Keeper maintains the link to data storage and exposes getter/setter methods for the various parts of the state machine
 type Keeper struct {
 	coinKeeper bank.Keeper
-	ibcKeeper  ibc.BankKeeper
+	ibcKeeper  ibck.Keeper
 
 	storeKey sdk.StoreKey // Unexposed key to access store from sdk.Context
 
@@ -23,7 +23,7 @@ type Keeper struct {
 }
 
 // NewKeeper creates new instances of the hh Keeper
-func NewKeeper(coinKeeper bank.Keeper, ibcKeeper ibc.BankKeeper, storeKey sdk.StoreKey, cdc *codec.Codec) Keeper {
+func NewKeeper(coinKeeper bank.Keeper, ibcKeeper ibck.Keeper, storeKey sdk.StoreKey, cdc *codec.Codec) Keeper {
 	return Keeper{
 		coinKeeper: coinKeeper,
 		ibcKeeper:  ibcKeeper,

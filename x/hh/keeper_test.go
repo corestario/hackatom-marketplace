@@ -4,6 +4,7 @@ import (
 	"github.com/cosmos/cosmos-sdk/codec"
 	"github.com/cosmos/cosmos-sdk/store"
 	sdk "github.com/cosmos/cosmos-sdk/types"
+	ibck "github.com/cosmos/cosmos-sdk/x/ibc/keeper"
 	"github.com/tendermint/tendermint/crypto/ed25519"
 	"math/rand"
 	"testing"
@@ -41,7 +42,7 @@ func makeAcc() sdk.AccAddress {
 func TestPutTwoNFTOnMarket(t *testing.T) {
 	stKey := sdk.NewKVStoreKey(StoreKey)
 	ti := setupTestInput(stKey)
-	k := NewKeeper(nil, nil, stKey, ti.cdc)
+	k := NewKeeper(nil, ibck.Keeper{}, stKey, ti.cdc)
 
 	account := makeAcc()
 	price := sdk.Coins{sdk.Coin{
@@ -82,7 +83,7 @@ func TestPutTwoNFTOnMarket(t *testing.T) {
 func TestPutSameNFTOnMarket(t *testing.T) {
 	stKey := sdk.NewKVStoreKey(StoreKey)
 	ti := setupTestInput(stKey)
-	k := NewKeeper(nil, nil, stKey, ti.cdc)
+	k := NewKeeper(nil, ibck.Keeper{}, stKey, ti.cdc)
 
 	price := sdk.Coins{sdk.Coin{
 		"usd",
