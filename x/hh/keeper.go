@@ -34,9 +34,9 @@ func (k Keeper) TransferNFTokenToZone(ctx sdk.Context, nfToken NFT, zoneID strin
 		return errors.New("call from not the owner")
 	}
 
-	//fixme should it be a remove call?
-	k.StoreNFT(ctx, nfToken, recipient)
 	//fixme call transfetToZone
+
+	k.DeleteNFT(ctx, nfToken.ID)
 	return nil
 }
 
@@ -140,6 +140,17 @@ func (k Keeper) StoreNFT(ctx sdk.Context, nft NFT, owner sdk.AccAddress) {
 
 	store.Set([]byte(nft.ID), k.cdc.MustMarshalBinaryBare(nft))
 	store.Set(composePutNFTOwnerKey(nft.ID), owner.Bytes())
+}
+
+func (k Keeper) DeleteNFT(ctx sdk.Context, tokenID string) {
+	store := ctx.KVStore(k.storeKey)
+
+	if !store.Has([]byte(tokenID)) {
+		return
+	}
+
+	store.Delete([]byte(tokenID))
+	store.Delete(composePutNFTOwnerKey(tokenID))
 }
 
 func (k Keeper) GetNFToken(ctx sdk.Context, tokenID string) *NFT {
