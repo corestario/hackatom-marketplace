@@ -69,16 +69,14 @@ func (msg MsgTransferNFTokenToZone) GetSigners() []sdk.AccAddress {
 // MsgPutNFTokenOnTheMarket.
 type MsgPutNFTokenOnTheMarket struct {
 	Sender sdk.AccAddress
-	Token  BaseNFT
-	Price  sdk.Coins
+	Token  NFT
 }
 
 // NewMsgPutNFTokenOnTheMarket is a constructor function for MsgPutNFTokenOnTheMarket
-func NewMsgPutNFTokenOnTheMarket(token BaseNFT, price sdk.Coins, sender sdk.AccAddress) MsgPutNFTokenOnTheMarket {
+func NewMsgPutNFTokenOnTheMarket(token NFT, sender sdk.AccAddress) MsgPutNFTokenOnTheMarket {
 	return MsgPutNFTokenOnTheMarket{
 		Token:  token,
 		Sender: sender,
-		Price:  price,
 	}
 }
 
@@ -93,7 +91,7 @@ func (msg MsgPutNFTokenOnTheMarket) ValidateBasic() sdk.Error {
 	if len(msg.Token.ID) == 0 {
 		return sdk.ErrUnknownRequest("TokenID cannot be empty")
 	}
-	if !msg.Price.IsAllPositive() {
+	if !msg.Token.Price.IsAllPositive() {
 		return sdk.ErrUnknownRequest("Token price should be positive")
 	}
 	return nil

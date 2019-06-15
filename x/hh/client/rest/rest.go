@@ -107,8 +107,10 @@ func putNFTokenOnTheMarket(cdc *codec.Codec, cliCtx context.CLIContext) http.Han
 			return
 		}
 
+		nftToken := hh.NFT{req.Token, true, priceInCoins}
+
 		runPostFunction(w, r, cdc, cliCtx, req.BaseReq, &req, req.Name, req.Password, req.Owner, func(addr sdk.AccAddress) sdk.Msg {
-			return hh.NewMsgPutNFTokenOnTheMarket(req.Token, priceInCoins, addr)
+			return hh.NewMsgPutNFTokenOnTheMarket(nftToken, addr)
 		})
 	}
 }
