@@ -40,7 +40,7 @@ func makeAcc() sdk.AccAddress {
 func TestPutTwoNFTOnMarket(t *testing.T) {
 	stKey := sdk.NewKVStoreKey(StoreKey)
 	ti := setupTestInput(stKey)
-	k := NewKeeper(nil, stKey, ti.cdc)
+	k := NewKeeper(nil, nil, stKey, ti.cdc)
 
 	account := makeAcc()
 	price := sdk.Coins{sdk.Coin{
@@ -81,7 +81,7 @@ func TestPutTwoNFTOnMarket(t *testing.T) {
 func TestPutSameNFTOnMarket(t *testing.T) {
 	stKey := sdk.NewKVStoreKey(StoreKey)
 	ti := setupTestInput(stKey)
-	k := NewKeeper(nil, stKey, ti.cdc)
+	k := NewKeeper(nil, nil, stKey, ti.cdc)
 
 	price := sdk.Coins{sdk.Coin{
 		"usd",
