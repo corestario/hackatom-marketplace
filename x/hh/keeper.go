@@ -6,6 +6,7 @@ import (
 	"github.com/cosmos/cosmos-sdk/codec"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/x/bank"
+	"github.com/cosmos/cosmos-sdk/x/ibc"
 )
 
 // StoreKey to be used when creating the KVStore
@@ -14,6 +15,7 @@ const StoreKey = "hh"
 // Keeper maintains the link to data storage and exposes getter/setter methods for the various parts of the state machine
 type Keeper struct {
 	coinKeeper bank.Keeper
+	ibcKeeper  ibc.Mapper
 
 	storeKey sdk.StoreKey // Unexposed key to access store from sdk.Context
 
@@ -35,14 +37,10 @@ func (k Keeper) TransferNFTokenToZone(ctx sdk.Context, nfToken NFT, zoneID strin
 	}
 
 	//fixme call transfetToZone
+	//k.ibcKeeper.TransferNFTokenToZone(nft, msg.ZoneID, msg.Sender, msg.Recipient)
 
 	k.DeleteNFT(ctx, nfToken.ID)
 	return nil
-}
-
-func (k Keeper) GetTransfer(ctx sdk.Context, transferID string) (*Transfer, error) {
-	// TODO: implement.
-	return nil, nil
 }
 
 func (k Keeper) PutNFTokenOnTheMarket(ctx sdk.Context, token NFT, sender sdk.AccAddress) error {

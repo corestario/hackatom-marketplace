@@ -24,7 +24,12 @@ func NewHandler(keeper Keeper) sdk.Handler {
 }
 
 func handleMsgTransferNFTokenToZone(ctx sdk.Context, keeper Keeper, msg MsgTransferNFTokenToZone) sdk.Result {
-	// TODO: implement.
+	nft := keeper.GetNFToken(ctx, msg.TokenID)
+
+	err := keeper.TransferNFTokenToZone(ctx, *nft, msg.ZoneID, msg.Sender, msg.Recipient)
+	if err != nil {
+		return sdk.ErrInternal(err.Error()).Result()
+	}
 	return sdk.Result{}
 }
 
