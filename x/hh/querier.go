@@ -23,8 +23,6 @@ func NewQuerier(keeper Keeper) sdk.Querier {
 			return queryNFToken(ctx, path[1:], req, keeper)
 		case QueryNFTokens:
 			return queryNFTokens(ctx, req, keeper)
-		case QueryTransfer:
-			return queryTransfer(ctx, path[1:], req, keeper)
 		default:
 			return nil, sdk.ErrUnknownRequest("unknown hh query endpoint")
 		}
@@ -67,19 +65,4 @@ func (m QueryResNFTokens) String() string {
 		out = append(out, token.String())
 	}
 	return strings.Join(out, "\n")
-}
-
-func queryTransfer(ctx sdk.Context, path []string, req abci.RequestQuery, keeper Keeper) (res []byte, err sdk.Error) {
-	transferID := path[0]
-	transfer, err1 := keeper.GetTransfer(ctx, transferID)
-	if err1 != nil {
-		return nil, sdk.ErrUnknownRequest("token does not exist")
-	}
-
-	bz, err2 := codec.MarshalJSONIndent(keeper.cdc, transfer)
-	if err2 != nil {
-		panic("could not marshal result to JSON")
-	}
-
-	return bz, nil
 }

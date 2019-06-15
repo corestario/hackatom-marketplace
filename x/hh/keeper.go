@@ -15,7 +15,7 @@ const StoreKey = "hh"
 // Keeper maintains the link to data storage and exposes getter/setter methods for the various parts of the state machine
 type Keeper struct {
 	coinKeeper bank.Keeper
-	ibcKeeper  ibc.Mapper
+	ibcKeeper  ibc.BankKeeper
 
 	storeKey sdk.StoreKey // Unexposed key to access store from sdk.Context
 
@@ -23,9 +23,10 @@ type Keeper struct {
 }
 
 // NewKeeper creates new instances of the hh Keeper
-func NewKeeper(coinKeeper bank.Keeper, storeKey sdk.StoreKey, cdc *codec.Codec) Keeper {
+func NewKeeper(coinKeeper bank.Keeper, ibcKeeper ibc.BankKeeper, storeKey sdk.StoreKey, cdc *codec.Codec) Keeper {
 	return Keeper{
 		coinKeeper: coinKeeper,
+		ibcKeeper:  ibcKeeper,
 		storeKey:   storeKey,
 		cdc:        cdc,
 	}

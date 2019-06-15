@@ -2,6 +2,7 @@ package app
 
 import (
 	"encoding/json"
+	"github.com/cosmos/cosmos-sdk/x/ibc"
 	"os"
 
 	tmtypes "github.com/tendermint/tendermint/types"
@@ -85,6 +86,7 @@ type hhApp struct {
 	// Keepers
 	accountKeeper       auth.AccountKeeper
 	bankKeeper          bank.Keeper
+	ibcKeeper           ibc.BankKeeper
 	stakingKeeper       staking.Keeper
 	slashingKeeper      slashing.Keeper
 	distrKeeper         distr.Keeper
@@ -147,6 +149,10 @@ func NewhhApp(logger tlog.Logger, db dbm.DB) *hhApp {
 		bank.DefaultCodespace,
 	)
 
+	// The IBCKeeper
+	//fixme init ibcKeeper
+	//app.ibcKeeper =  ibc.NewBankKeeper()
+
 	// The FeeCollectionKeeper collects transaction fees and renders them to the fee distribution module
 	app.feeCollectionKeeper = auth.NewFeeCollectionKeeper(cdc, app.keyFeeCollection)
 
@@ -190,6 +196,7 @@ func NewhhApp(logger tlog.Logger, db dbm.DB) *hhApp {
 	// It handles interactions with the namestore
 	app.nsKeeper = hh.NewKeeper(
 		app.bankKeeper,
+		app.ibcKeeper,
 		app.keyNFT,
 		app.cdc,
 	)
