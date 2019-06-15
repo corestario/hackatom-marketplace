@@ -119,6 +119,7 @@ func (k Keeper) GetNFTokensOnSaleList(ctx sdk.Context) []NFT {
 		}
 
 		var price sdk.Coins
+		fmt.Println(string(it.Value()))
 		err := json.Unmarshal(it.Value(), &price)
 		if err != nil {
 			fmt.Println("json.Unmarshal err", err)
