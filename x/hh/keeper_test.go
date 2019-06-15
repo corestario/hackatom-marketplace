@@ -44,7 +44,7 @@ func makeAcc() sdk.AccAddress {
 func TestPutTwoNFTOnMarket(t *testing.T) {
 	stKey := sdk.NewKVStoreKey(StoreKey)
 	ti := setupTestInput(stKey)
-	k := NewKeeper(nil, ibck.Keeper{}, auth.AccountKeeper{}, nil, auth.FeeCollectionKeeper{}, stKey, ti.cdc)
+	k := NewKeeper(nil, ibck.Keeper{}, auth.AccountKeeper{}, auth.FeeCollectionKeeper{}, stKey, ti.cdc)
 
 	account := makeAcc()
 	price := sdk.Coins{sdk.Coin{
@@ -85,7 +85,7 @@ func TestPutTwoNFTOnMarket(t *testing.T) {
 func TestPutSameNFTOnMarket(t *testing.T) {
 	stKey := sdk.NewKVStoreKey(StoreKey)
 	ti := setupTestInput(stKey)
-	k := NewKeeper(nil, ibck.Keeper{}, auth.AccountKeeper{}, nil, auth.FeeCollectionKeeper{}, stKey, ti.cdc)
+	k := NewKeeper(nil, ibck.Keeper{}, auth.AccountKeeper{}, auth.FeeCollectionKeeper{}, stKey, ti.cdc)
 
 	price := sdk.Coins{sdk.Coin{
 		"usd",
@@ -125,7 +125,7 @@ func TestPutSameNFTOnMarket(t *testing.T) {
 func TestPutAndBuyNFT(t *testing.T) {
 	stKey := sdk.NewKVStoreKey(StoreKey)
 	ti := setupTestInput(stKey)
-	k := NewKeeper(nil, ibck.Keeper{}, auth.AccountKeeper{}, nil, auth.FeeCollectionKeeper{}, stKey, ti.cdc)
+	k := NewKeeper(nil, ibck.Keeper{}, auth.AccountKeeper{}, auth.FeeCollectionKeeper{}, stKey, ti.cdc)
 
 	account := makeAcc()
 	price := sdk.Coins{sdk.Coin{

@@ -20,7 +20,6 @@ type Keeper struct {
 	ibcKeeper  ibck.Keeper
 
 	accountKeeper       auth.AccountKeeper
-	bankKeeper          bank.Keeper
 	feeCollectionKeeper auth.FeeCollectionKeeper
 
 	storeKey sdk.StoreKey // Unexposed key to access store from sdk.Context
