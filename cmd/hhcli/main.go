@@ -1,7 +1,6 @@
 package main
 
 import (
-	"github.com/cosmos/cosmos-sdk/x/ibc"
 	"os"
 	"path"
 
@@ -93,7 +92,6 @@ func queryCmd(cdc *amino.Codec) *cobra.Command {
 	)
 
 	app.ModuleBasics.AddQueryCommands(queryCmd, cdc)
-	ibc.AppModule.GetQueryCmd(cdc)
 	return queryCmd
 }
 
