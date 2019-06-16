@@ -6,11 +6,16 @@ make install
 
 hhd init node_name --chain-id hhchain
 
-hhcli keys add validator1
-hhcli keys add user
+hhcli keys add validator1 --recover <<< "12345678
+base figure planet hazard sail easily honey advance tuition grab across unveil random kiss fence connect disagree evil recall latin cause brisk soft lunch
+"
 
-hhd add-genesis-account $(hhcli keys show validator1 -a) 1000hhtoken,100000000stake
-hhd add-genesis-account $(hhcli keys show user -a) 1000hhtoken
+hhcli keys add alice --recover <<< "12345678
+actor barely wait patrol moral amateur hole clerk misery truly salad wonder artefact orchard grit check abandon drip avoid shaft dirt thought melody drip
+"
+
+hhd add-genesis-account $(hhcli keys show validator1 -a) 1000token,100000000stake
+hhd add-genesis-account $(hhcli keys show alice -a) 1000token
 
 hhcli config chain-id hhchain
 hhcli config output json
