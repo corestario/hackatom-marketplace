@@ -1,6 +1,7 @@
 package hh
 
 import (
+	"fmt"
 	"github.com/cosmos/cosmos-sdk/x/auth"
 	"github.com/cosmos/cosmos-sdk/x/bank"
 	"github.com/cosmos/cosmos-sdk/x/bank/types"
@@ -254,7 +255,6 @@ func TestPutAndBuyNFT(t *testing.T) {
 func TestIBC(t *testing.T) {
 	ti1 := setupTestInput()
 	ti2 := setupTestInput()
-	_ = ti2
 
 	clientID1 := "clientID1"
 
@@ -291,6 +291,31 @@ func TestIBC(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
+
+	err = ti2.keeper.ibcKeeper.CreateClient(ti2.ctx, clientID1, tendermint.ConsensusState{
+		ChainID: ti2.chainID,
+	})
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	err = ti2.keeper.ibcKeeper.OpenConnection(ti2.ctx, connID, cp2, clientID1, cp2)
+	if err != nil {
+		t.Fatal(err)
+	}
+	err = ti2.keeper.ibcKeeper.OpenChannel(ti2.ctx, ModuleName, connID, id, cp2, cp1)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	pkt := &SendTokenPacket{}
+
+	err = ti2.keeper.ibcKeeper.Receive(ti2.ctx, connID, id, pkt, nil)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	fmt.Println(pkt)
 
 }
 

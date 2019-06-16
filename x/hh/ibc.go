@@ -3,6 +3,7 @@ package hh
 import (
 	"encoding/json"
 	"fmt"
+	commitment "github.com/cosmos/cosmos-sdk/x/ibc/23-commitment"
 	"math"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
@@ -13,7 +14,6 @@ const (
 	CounterpartyID       = "hub"
 	CounterpartyClientID = "me"
 )
-
 
 // Handle a message to create nft
 func handleMsgTransferTokenToZone(
@@ -53,8 +53,8 @@ type MsgTransferTokenToZone struct {
 // NewMsgCreateNFT is a constructor function for MsgCreateNFT
 func NewMsgTransferTokenToZone(owner sdk.AccAddress, tokenID string, zoneID string) MsgTransferTokenToZone {
 	return MsgTransferTokenToZone{
-		Owner:   owner,
-		TokenID: tokenID,
+		Owner:                owner,
+		TokenID:              tokenID,
 		CounterpartyClientID: zoneID,
 	}
 }
@@ -106,4 +106,15 @@ func (m *SendTokenPacket) Commit() []byte {
 	}
 
 	return data
+}
+
+type ProofPacket struct {
+}
+
+func (p *ProofPacket) GetKey() []byte {
+	return []byte{}
+}
+
+func (p *ProofPacket) Verify(commitment.Root, []byte) error {
+	return nil
 }
