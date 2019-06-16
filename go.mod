@@ -1,4 +1,4 @@
-module dgamingfoundation/hackathon-hub
+module dgamingfoundation/hackathom-marketplace
 
 go 1.12
 
