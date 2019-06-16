@@ -1,11 +1,12 @@
 package hh
 
 import (
+	"fmt"
 	"github.com/cosmos/cosmos-sdk/x/auth"
 	"github.com/cosmos/cosmos-sdk/x/bank"
 	"github.com/cosmos/cosmos-sdk/x/bank/types"
-	"github.com/cosmos/cosmos-sdk/x/params"
 	"github.com/cosmos/cosmos-sdk/x/ibc/02-client/tendermint"
+	"github.com/cosmos/cosmos-sdk/x/params"
 	"math/rand"
 	"testing"
 
@@ -40,7 +41,6 @@ func MakeCodec() *codec.Codec {
 
 	ModuleBasics.RegisterCodec(cdc)
 	codec.RegisterCrypto(cdc)
-	ibck.RegisterCodec(cdc)
 	sdk.RegisterCodec(cdc)
 	return cdc
 }
@@ -93,11 +93,9 @@ func TestPutTwoNFTOnMarket(t *testing.T) {
 }
 
 func TestPutSameNFTOnMarket(t *testing.T) {
-	ti := setupTestInput()
-	k := NewKeeper(ti.bank, ibck.Keeper{}, ti.auth, auth.FeeCollectionKeeper{}, ti.stKey, ti.cdc)
 	stKey := sdk.NewKVStoreKey(StoreKey)
-	ti := setupTestInput(stKey,"1")
-	k := NewKeeper(nil, ibck.Keeper{}, stKey, ti.cdc)
+	ti := setupTestInput(stKey, "1")
+	k := NewKeeper(ti.bank, ibck.Keeper{}, ti.auth, auth.FeeCollectionKeeper{}, ti.stKey, ti.cdc)
 
 	price := sdk.Coins{sdk.Coin{
 		denomination,
@@ -135,7 +133,8 @@ func TestPutSameNFTOnMarket(t *testing.T) {
 }
 
 func TestPutAndBuyNFT(t *testing.T) {
-	ti := setupTestInput()
+	stKey := sdk.NewKVStoreKey(StoreKey)
+	ti := setupTestInput(stKey, "1")
 	k := NewKeeper(ti.bank, ibck.Keeper{}, ti.auth, auth.FeeCollectionKeeper{}, ti.stKey, ti.cdc)
 
 	sellerAccount := makeAcc()
@@ -156,17 +155,16 @@ func TestPutAndBuyNFT(t *testing.T) {
 
 	nftToSell := NFT{
 		BaseNFT{
-			ID: "1234",
-			Owner: sellerAccount,
-			Name: "dog",
+			ID:          "1234",
+			Owner:       sellerAccount,
+			Name:        "dog",
 			Description: "a wet dog",
-			Image: "some.gif",
-			TokenURI: ".ws",
+			Image:       "some.gif",
+			TokenURI:    ".ws",
 		},
 		false,
 		price,
 	}
-
 
 	k.setNFTOwner(ti.ctx, nftToSell.BaseNFT.ID, sellerAccount)
 
@@ -221,7 +219,6 @@ func TestPutAndBuyNFT(t *testing.T) {
 		t.Fatal(err)
 	}
 
-
 	if !ti.bank.GetCoins(ti.ctx, sellerAccount).IsEqual(price) {
 		t.Fatal("sellerAccount should get nft price")
 	}
@@ -258,74 +255,69 @@ func TestPutAndBuyNFT(t *testing.T) {
 	}
 }
 
-func TestIBC(t *testing.T)  {
+func TestIBC(t *testing.T) {
 	stKey := sdk.NewKVStoreKey(StoreKey)
-	ti1 := setupTestInput(stKey,"ch1")
-	ti2 := setupTestInput(stKey,"ch2")
-	ibcKeeper1:=ibck.NewKeeper(ti1.cdc,stKey)
-	ibcKeeper2:=ibck.NewKeeper(ti2.cdc,stKey)
+	ti1 := setupTestInput(stKey, "ch1")
+	//ti2 := setupTestInput(stKey,"ch2")
+	ibcKeeper1 := ibck.NewKeeper(ti1.cdc, stKey)
+	//ibcKeeper2:=ibck.NewKeeper(ti2.cdc,stKey)
 
+	clientID1 := "clientID1"
+	chainID1 := "chainID1"
+	clientID2 := "clientID2"
 
-	clientID1:="clientID1"
-	chainID1:="chainID1"
-
-
-	connID:="some conn"
-	cp1:="cp1"
-	cp2:="cp2"
-	id:="123"
-
-
+	connID := "some conn"
+	cp1 := "cp1"
+	cp2 := "cp2"
+	id := "123"
 
 	var err error
-	err = ibcKeeper1.CreateClient(ti1.ctx,clientID1,tendermint.ConsensusState{
-		ChainID:chainID1,
+	err = ibcKeeper1.CreateClient(ti1.ctx, clientID1, tendermint.ConsensusState{
+		ChainID: chainID1,
 	})
-	if err!=nil {
+	if err != nil {
 		t.Fatal(err)
 	}
 
-	err=ibcKeeper1.OpenConnection(ti1.ctx,clientID1, cp1, clientID1, cp2)
-	if err!=nil {
-		t.Fatal(err)
-	}
-	err=ibcKeeper1.OpenChannel(ti1.ctx, ModuleName, connID, id, cp1, cp2)
-	if err!=nil {
-		t.Fatal(err)
-	}
+	obj, err := ibcKeeper1.Client.Query(ti1.ctx, clientID1)
+	fmt.Println("err", err)
+	//fmt.Println(obj.Value(ti1.ctx))
+	fmt.Println(obj.ID())
+	//spew.Dump(obj)
 
-
-
-
-
-
-
-
-	k1 := NewKeeper(nil, ibcKeeper1, stKey, ti1.cdc)
-	k2 := NewKeeper(nil, ibcKeeper2, stKey, ti2.cdc)
-	_=k2
-	acc1:=makeAcc()
-	acc2:=makeAcc()
-
-
-
-
-	err=k1.TransferNFTokenToZone(
-		ti1.ctx,
-		NFT{
-			BaseNFT:BaseNFT{
-					ID:"one",
-				},
-		},
-		"zone1",
-		acc1,
-		acc2,
-		)
-	if err!=nil {
+	if err != nil {
 		t.Fatal(err)
 	}
 
+	err = ibcKeeper1.OpenConnection(ti1.ctx, clientID1, cp1, clientID2, cp2)
+	if err != nil {
+		t.Fatal(err)
+	}
+	err = ibcKeeper1.OpenChannel(ti1.ctx, ModuleName, connID, id, cp1, cp2)
+	if err != nil {
+		t.Fatal(err)
+	}
 
+	//k1 := NewKeeper(nil, ibcKeeper1, stKey, ti1.cdc)
+	//k2 := NewKeeper(nil, ibcKeeper2, stKey, ti2.cdc)
+	//_=k2
+	//acc1:=makeAcc()
+	//acc2:=makeAcc()
+
+	//err=k1.TransferNFTokenToZone(
+	//	ti1.ctx,
+	//	NFT{
+	//		BaseNFT:BaseNFT{
+	//				ID:"one",
+	//			},
+	//	},
+	//	"zone1",
+	//	acc1,
+	//	acc2,
+	//	)
+	//if err!=nil {
+	//	t.Fatal(err)
+	//}
 
 }
 
@@ -350,11 +342,11 @@ func setupTestInput(key sdk.StoreKey, chainID string) testInput {
 
 	randomSuffix := string(randomSuffixBytes[:])
 
-	authCapKey := sdk.NewKVStoreKey("authCapKey"+randomSuffix)
-	fckCapKey := sdk.NewKVStoreKey("fckCapKey"+randomSuffix)
-	stKey := sdk.NewKVStoreKey("storeKey"+randomSuffix)
-	keyParams := sdk.NewKVStoreKey("params"+randomSuffix)
-	tkeyParams := sdk.NewTransientStoreKey("transient_params"+randomSuffix)
+	authCapKey := sdk.NewKVStoreKey("authCapKey" + randomSuffix)
+	fckCapKey := sdk.NewKVStoreKey("fckCapKey" + randomSuffix)
+	stKey := sdk.NewKVStoreKey("storeKey" + randomSuffix)
+	keyParams := sdk.NewKVStoreKey("params" + randomSuffix)
+	tkeyParams := sdk.NewTransientStoreKey("transient_params" + randomSuffix)
 
 	ms := store.NewCommitMultiStore(db)
 	ms.MountStoreWithDB(authCapKey, sdk.StoreTypeIAVL, db)
@@ -366,14 +358,13 @@ func setupTestInput(key sdk.StoreKey, chainID string) testInput {
 	ms.MountStoreWithDB(key2, sdk.StoreTypeIAVL, db)
 	ms.LoadLatestVersion()
 
-	ctx := sdk.NewContext(ms, abci.Header{ChainID: "test-chain-id"+randomSuffix}, false, log.NewNopLogger())
+	ctx := sdk.NewContext(ms, abci.Header{ChainID: chainID}, false, log.NewNopLogger())
 
 	pk := params.NewKeeper(cdc, keyParams, tkeyParams, params.DefaultCodespace)
 	ak := auth.NewAccountKeeper(
 		cdc, authCapKey, pk.Subspace(auth.DefaultParamspace), auth.ProtoBaseAccount,
 	)
 	ak.SetParams(ctx, auth.DefaultParams())
-	ctx := sdk.NewContext(ms, abci.Header{ChainID: chainID}, false, log.NewNopLogger())
 
 	bankKeeper := bank.NewBaseKeeper(ak, pk.Subspace(types.DefaultParamspace), types.DefaultCodespace)
 	bankKeeper.SetSendEnabled(ctx, true)
