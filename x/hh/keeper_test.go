@@ -5,6 +5,7 @@ import (
 	"github.com/cosmos/cosmos-sdk/x/bank"
 	"github.com/cosmos/cosmos-sdk/x/bank/types"
 	"github.com/cosmos/cosmos-sdk/x/params"
+	"github.com/cosmos/cosmos-sdk/x/ibc/02-client/tendermint"
 	"math/rand"
 	"testing"
 
@@ -39,6 +40,7 @@ func MakeCodec() *codec.Codec {
 
 	ModuleBasics.RegisterCodec(cdc)
 	codec.RegisterCrypto(cdc)
+	ibck.RegisterCodec(cdc)
 	sdk.RegisterCodec(cdc)
 	return cdc
 }
@@ -50,7 +52,8 @@ func makeAcc() sdk.AccAddress {
 }
 
 func TestPutTwoNFTOnMarket(t *testing.T) {
-	ti := setupTestInput()
+	stKey := sdk.NewKVStoreKey(StoreKey)
+	ti := setupTestInput(stKey, "1")
 	k := NewKeeper(ti.bank, ibck.Keeper{}, ti.auth, auth.FeeCollectionKeeper{}, ti.stKey, ti.cdc)
 
 	account := makeAcc()
@@ -92,6 +95,9 @@ func TestPutTwoNFTOnMarket(t *testing.T) {
 func TestPutSameNFTOnMarket(t *testing.T) {
 	ti := setupTestInput()
 	k := NewKeeper(ti.bank, ibck.Keeper{}, ti.auth, auth.FeeCollectionKeeper{}, ti.stKey, ti.cdc)
+	stKey := sdk.NewKVStoreKey(StoreKey)
+	ti := setupTestInput(stKey,"1")
+	k := NewKeeper(nil, ibck.Keeper{}, stKey, ti.cdc)
 
 	price := sdk.Coins{sdk.Coin{
 		denomination,
@@ -135,7 +141,7 @@ func TestPutAndBuyNFT(t *testing.T) {
 	sellerAccount := makeAcc()
 	acc := ti.auth.NewAccountWithAddress(ti.ctx, sellerAccount)
 	ti.auth.SetAccount(ti.ctx, acc)
-	
+
 	if !ti.bank.GetCoins(ti.ctx, sellerAccount).IsEqual(sdk.NewCoins()) {
 		t.Fatal("sellerAccount should be empty")
 	}
@@ -147,7 +153,7 @@ func TestPutAndBuyNFT(t *testing.T) {
 
 	priceCoin := sdk.Coin{denomination, sdk.NewInt(100)}
 	price := sdk.Coins{priceCoin}
-	
+
 	nftToSell := NFT{
 		BaseNFT{
 			ID: "1234",
@@ -160,8 +166,8 @@ func TestPutAndBuyNFT(t *testing.T) {
 		false,
 		price,
 	}
-	
-	
+
+
 	k.setNFTOwner(ti.ctx, nftToSell.BaseNFT.ID, sellerAccount)
 
 	//put first NFT
@@ -252,6 +258,77 @@ func TestPutAndBuyNFT(t *testing.T) {
 	}
 }
 
+func TestIBC(t *testing.T)  {
+	stKey := sdk.NewKVStoreKey(StoreKey)
+	ti1 := setupTestInput(stKey,"ch1")
+	ti2 := setupTestInput(stKey,"ch2")
+	ibcKeeper1:=ibck.NewKeeper(ti1.cdc,stKey)
+	ibcKeeper2:=ibck.NewKeeper(ti2.cdc,stKey)
+
+
+	clientID1:="clientID1"
+	chainID1:="chainID1"
+
+
+	connID:="some conn"
+	cp1:="cp1"
+	cp2:="cp2"
+	id:="123"
+
+
+
+	var err error
+	err = ibcKeeper1.CreateClient(ti1.ctx,clientID1,tendermint.ConsensusState{
+		ChainID:chainID1,
+	})
+	if err!=nil {
+		t.Fatal(err)
+	}
+
+	err=ibcKeeper1.OpenConnection(ti1.ctx,clientID1, cp1, clientID1, cp2)
+	if err!=nil {
+		t.Fatal(err)
+	}
+	err=ibcKeeper1.OpenChannel(ti1.ctx, ModuleName, connID, id, cp1, cp2)
+	if err!=nil {
+		t.Fatal(err)
+	}
+
+
+
+
+
+
+
+
+	k1 := NewKeeper(nil, ibcKeeper1, stKey, ti1.cdc)
+	k2 := NewKeeper(nil, ibcKeeper2, stKey, ti2.cdc)
+	_=k2
+	acc1:=makeAcc()
+	acc2:=makeAcc()
+
+
+
+
+	err=k1.TransferNFTokenToZone(
+		ti1.ctx,
+		NFT{
+			BaseNFT:BaseNFT{
+					ID:"one",
+				},
+		},
+		"zone1",
+		acc1,
+		acc2,
+		)
+	if err!=nil {
+		t.Fatal(err)
+	}
+
+
+
+}
+
 type testInput struct {
 	cdc *codec.Codec
 	ctx sdk.Context
@@ -262,10 +339,11 @@ type testInput struct {
 	bank bank.Keeper
 }
 
-func setupTestInput() testInput {
+func setupTestInput(key sdk.StoreKey, chainID string) testInput {
 	db := dbm.NewMemDB()
 
 	cdc := MakeCodec()
+	key2 := sdk.NewKVStoreKey("test")
 
 	var randomSuffixBytes [16]byte
 	rand.Read(randomSuffixBytes[:])
@@ -284,6 +362,8 @@ func setupTestInput() testInput {
 	ms.MountStoreWithDB(stKey, sdk.StoreTypeIAVL, db)
 	ms.MountStoreWithDB(keyParams, sdk.StoreTypeIAVL, db)
 	ms.MountStoreWithDB(tkeyParams, sdk.StoreTypeTransient, db)
+	ms.MountStoreWithDB(key, sdk.StoreTypeIAVL, db)
+	ms.MountStoreWithDB(key2, sdk.StoreTypeIAVL, db)
 	ms.LoadLatestVersion()
 
 	ctx := sdk.NewContext(ms, abci.Header{ChainID: "test-chain-id"+randomSuffix}, false, log.NewNopLogger())
@@ -293,6 +373,7 @@ func setupTestInput() testInput {
 		cdc, authCapKey, pk.Subspace(auth.DefaultParamspace), auth.ProtoBaseAccount,
 	)
 	ak.SetParams(ctx, auth.DefaultParams())
+	ctx := sdk.NewContext(ms, abci.Header{ChainID: chainID}, false, log.NewNopLogger())
 
 	bankKeeper := bank.NewBaseKeeper(ak, pk.Subspace(types.DefaultParamspace), types.DefaultCodespace)
 	bankKeeper.SetSendEnabled(ctx, true)
