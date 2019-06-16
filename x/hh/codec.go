@@ -6,7 +6,7 @@ import (
 
 // RegisterCodec registers concrete types on the Amino codec
 func RegisterCodec(cdc *codec.Codec) {
-	cdc.RegisterConcrete(MsgTransferNFTokenToZone{}, "hh/TransferNFTokenToZone", nil)
+	cdc.RegisterConcrete(MsgTransferTokenToZone{}, "hh/TransferNFTokenToZone", nil)
 	cdc.RegisterConcrete(MsgPutNFTokenOnTheMarket{}, "hh/PutNFTokenOnTheMarket", nil)
 	cdc.RegisterConcrete(MsgBuyNFToken{}, "hh/BuyNFToken", nil)
 }

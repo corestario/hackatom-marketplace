@@ -3,6 +3,7 @@ package app
 import (
 	"encoding/json"
 	"github.com/cosmos/cosmos-sdk/types/module"
+	"github.com/cosmos/cosmos-sdk/x/ibc"
 	ibck "github.com/cosmos/cosmos-sdk/x/ibc/keeper"
 	"os"
 
@@ -218,10 +219,11 @@ func NewhhApp(logger tlog.Logger, db dbm.DB) *hhApp {
 		genutil.NewAppModule(app.accountKeeper, app.stakingKeeper, app.BaseApp.DeliverTx),
 		auth.NewAppModule(app.accountKeeper, app.feeCollectionKeeper),
 		bank.NewAppModule(app.bankKeeper, app.accountKeeper),
-		hh.NewAppModule(app.nsKeeper, app.bankKeeper),
+		hh.NewAppModule(app.nsKeeper, app.bankKeeper, app.ibcKeeper),
 		distr.NewAppModule(app.distrKeeper),
 		slashing.NewAppModule(app.slashingKeeper, app.stakingKeeper),
 		staking.NewAppModule(app.stakingKeeper, app.feeCollectionKeeper, app.distrKeeper, app.accountKeeper),
+		ibc.NewAppModule(app.ibcKeeper),
 	)
 
 	app.mm.SetOrderBeginBlockers(distr.ModuleName, slashing.ModuleName)

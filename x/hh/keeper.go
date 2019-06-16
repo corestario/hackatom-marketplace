@@ -39,19 +39,6 @@ func NewKeeper(coinKeeper bank.Keeper, ibcKeeper ibck.Keeper, accountKeeper auth
 	}
 }
 
-func (k Keeper) TransferNFTokenToZone(ctx sdk.Context, nfToken NFT, zoneID string, sender, recipient sdk.AccAddress) error {
-	if !k.getNFTOwner(ctx, nfToken.ID).Empty() {
-		return errors.New("call from not the owner")
-	}
-	//var err error
-
-	//fixme call transfetToZone
-	//k.ibcKeeper.Send().TransferNFTokenToZone(nft, msg.ZoneID, msg.Sender, msg.Recipient)
-
-	k.DeleteNFT(ctx, nfToken.ID)
-	return nil
-}
-
 func (k Keeper) PutNFTokenOnTheMarket(ctx sdk.Context, token NFT, sender sdk.AccAddress) error {
 	token.OnSale = true
 
