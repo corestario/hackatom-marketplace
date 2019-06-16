@@ -265,8 +265,6 @@ func TestIBC(t *testing.T)  {
 	cp2:="cp2"
 	id:="123"
 
-
-
 	var err error
 	err = ti1.keeper.ibcKeeper.CreateClient(ti1.ctx,clientID1,tendermint.ConsensusState{
 		ChainID: ti1.chainID,
