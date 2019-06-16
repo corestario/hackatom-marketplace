@@ -87,7 +87,6 @@ type hhApp struct {
 	tkeyDistr        *sdk.TransientStoreKey
 	keyNFT           *sdk.KVStoreKey
 	keyIBC           *sdk.KVStoreKey
-	keyIBCNFT        *sdk.KVStoreKey
 	keyParams        *sdk.KVStoreKey
 	tkeyParams       *sdk.TransientStoreKey
 	keySlashing      *sdk.KVStoreKey
@@ -129,8 +128,7 @@ func NewhhApp(logger tlog.Logger, db dbm.DB) *hhApp {
 		keyDistr:         sdk.NewKVStoreKey(distr.StoreKey),
 		tkeyDistr:        sdk.NewTransientStoreKey(distr.TStoreKey),
 		keyNFT:           sdk.NewKVStoreKey(hh.StoreKey),
-		keyIBC:           sdk.NewKVStoreKey("ibc"),
-		keyIBCNFT:        sdk.NewKVStoreKey(IBCStoreKey),
+		keyIBC:           sdk.NewKVStoreKey(IBCStoreKey),
 		keyParams:        sdk.NewKVStoreKey(params.StoreKey),
 		tkeyParams:       sdk.NewTransientStoreKey(params.TStoreKey),
 		keySlashing:      sdk.NewKVStoreKey(slashing.StoreKey),
@@ -161,8 +159,7 @@ func NewhhApp(logger tlog.Logger, db dbm.DB) *hhApp {
 	)
 
 	// The IBCKeeper
-	app.ibcKeeper=ibck.NewKeeper(cdc, app.keyIBC)
-	app.ibcKeeper = ibck.NewKeeper(app.cdc, app.keyIBCNFT)
+	app.ibcKeeper = ibck.NewKeeper(cdc, app.keyIBC)
 
 	// The FeeCollectionKeeper collects transaction fees and renders them to the fee distribution module
 	app.feeCollectionKeeper = auth.NewFeeCollectionKeeper(cdc, app.keyFeeCollection)
@@ -268,7 +265,7 @@ func NewhhApp(logger tlog.Logger, db dbm.DB) *hhApp {
 		app.tkeyDistr,
 		app.keySlashing,
 		app.keyNFT,
-		app.keyIBCNFT,
+		app.keyIBC,
 		app.keyParams,
 		app.tkeyParams,
 	)
