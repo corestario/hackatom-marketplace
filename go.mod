@@ -9,7 +9,7 @@ require (
 	github.com/bgentry/speakeasy v0.1.0
 	github.com/btcsuite/btcd v0.0.0-20190115013929-ed77733ec07d
 	github.com/btcsuite/btcutil v0.0.0-20180706230648-ab6388e0c60a
-	github.com/cosmos/cosmos-sdk v0.28.2-0.20190615115749-95b946b4559a
+	github.com/cosmos/cosmos-sdk v0.28.2-0.20190616111507-b30e69c6511c
 	github.com/cosmos/go-bip39 v0.0.0-20180618194314-52158e4697b8
 	github.com/davecgh/go-spew v1.1.1
 	github.com/fsnotify/fsnotify v1.4.7
