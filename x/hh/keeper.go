@@ -43,6 +43,7 @@ func (k Keeper) TransferNFTokenToZone(ctx sdk.Context, nfToken NFT, zoneID strin
 	if !k.getNFTOwner(ctx, nfToken.ID).Empty() {
 		return errors.New("call from not the owner")
 	}
+	//var err error
 
 	//fixme call transfetToZone
 	//k.ibcKeeper.Send().TransferNFTokenToZone(nft, msg.ZoneID, msg.Sender, msg.Recipient)

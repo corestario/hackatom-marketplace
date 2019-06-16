@@ -85,6 +85,7 @@ type hhApp struct {
 	keyDistr         *sdk.KVStoreKey
 	tkeyDistr        *sdk.TransientStoreKey
 	keyNFT           *sdk.KVStoreKey
+	keyIBC           *sdk.KVStoreKey
 	keyIBCNFT        *sdk.KVStoreKey
 	keyParams        *sdk.KVStoreKey
 	tkeyParams       *sdk.TransientStoreKey
@@ -127,6 +128,7 @@ func NewhhApp(logger tlog.Logger, db dbm.DB) *hhApp {
 		keyDistr:         sdk.NewKVStoreKey(distr.StoreKey),
 		tkeyDistr:        sdk.NewTransientStoreKey(distr.TStoreKey),
 		keyNFT:           sdk.NewKVStoreKey(hh.StoreKey),
+		keyIBC:           sdk.NewKVStoreKey("ibc"),
 		keyIBCNFT:        sdk.NewKVStoreKey(IBCStoreKey),
 		keyParams:        sdk.NewKVStoreKey(params.StoreKey),
 		tkeyParams:       sdk.NewTransientStoreKey(params.TStoreKey),
@@ -158,6 +160,7 @@ func NewhhApp(logger tlog.Logger, db dbm.DB) *hhApp {
 	)
 
 	// The IBCKeeper
+	app.ibcKeeper=ibck.NewKeeper(cdc, app.keyIBC)
 	app.ibcKeeper = ibck.NewKeeper(app.cdc, app.keyIBCNFT)
 
 	// The FeeCollectionKeeper collects transaction fees and renders them to the fee distribution module

@@ -1,6 +1,7 @@
 package main
 
 import (
+	"github.com/cosmos/cosmos-sdk/x/ibc"
 	"os"
 	"path"
 
@@ -19,7 +20,6 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	authcmd "github.com/cosmos/cosmos-sdk/x/auth/client/cli"
 	bankcmd "github.com/cosmos/cosmos-sdk/x/bank/client/cli"
-
 )
 
 const (
@@ -93,6 +93,7 @@ func queryCmd(cdc *amino.Codec) *cobra.Command {
 	)
 
 	app.ModuleBasics.AddQueryCommands(queryCmd, cdc)
+	ibc.AppModule.GetQueryCmd(cdc)
 	return queryCmd
 }
 
