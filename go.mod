@@ -1,4 +1,4 @@
-module dgamingfoundation/hackathom-marketplace
+module dgamingfoundation/hackatom-marketplace
 
 go 1.12
 
