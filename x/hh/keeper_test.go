@@ -51,7 +51,7 @@ func makeAcc() sdk.AccAddress {
 
 func TestPutTwoNFTOnMarket(t *testing.T) {
 	ti := setupTestInput()
-	
+
 	k := ti.keeper
 
 	account := makeAcc()
@@ -93,7 +93,7 @@ func TestPutTwoNFTOnMarket(t *testing.T) {
 func TestPutSameNFTOnMarket(t *testing.T) {
 	ti := setupTestInput()
 	k := ti.keeper
-	
+
 	price := sdk.Coins{sdk.Coin{
 		denomination,
 		sdk.NewInt(100),
@@ -257,7 +257,7 @@ func TestIBC(t *testing.T)  {
 	ti1 := setupTestInput()
 	ti2 := setupTestInput()
 	_ = ti2
-	
+
 	clientID1:="clientID1"
 
 	connID:="some conn"
@@ -285,24 +285,24 @@ func TestIBC(t *testing.T)  {
 	}
 
 	/*
-	acc1:=makeAcc()
-	acc2:=makeAcc()
+		acc1:=makeAcc()
+		acc2:=makeAcc()
 
-	err=ti1.TransferNFTokenToZone(
-		ti1.ctx,
-		NFT{
-			BaseNFT:BaseNFT{
-					ID:"one",
-				},
-		},
-		"zone1",
-		acc1,
-		acc2,
-		)
-	if err!=nil {
-		t.Fatal(err)
-	}
-*/
+		err=ti1.TransferNFTokenToZone(
+			ti1.ctx,
+			NFT{
+				BaseNFT:BaseNFT{
+						ID:"one",
+					},
+			},
+			"zone1",
+			acc1,
+			acc2,
+			)
+		if err!=nil {
+			t.Fatal(err)
+		}
+	*/
 
 }
 
@@ -313,7 +313,7 @@ type testInput struct {
 	stKey *sdk.KVStoreKey
 
 	keeper Keeper
-	
+
 	chainID string
 }
 
@@ -348,7 +348,7 @@ func setupTestInput() testInput {
 	ms.LoadLatestVersion()
 
 	chainID := "test-chain-id"+randomSuffix
-	
+
 	ctx := sdk.NewContext(ms, abci.Header{ChainID: chainID}, false, log.NewNopLogger())
 
 	pk := params.NewKeeper(cdc, keyParams, tkeyParams, params.DefaultCodespace)
@@ -363,13 +363,13 @@ func setupTestInput() testInput {
 	ibcKeeper := ibck.NewKeeper(cdc, ibcKey)
 
 	feeCollectionKeeper := auth.NewFeeCollectionKeeper(cdc, feeKey)
-	
+
 	keeper := NewKeeper(bankKeeper,
 		ibcKeeper,
 		ak,
 		feeCollectionKeeper,
 		storeKey,
 		cdc,)
-	
+
 	return testInput{cdc: cdc, ctx: ctx, stKey: stKey, keeper: keeper, chainID: chainID}
 }
