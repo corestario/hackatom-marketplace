@@ -1,6 +1,7 @@
 #!/usr/bin/env bash
 
 rm -rf ~/.hh*
+mkdir -p ~/.hhd/config && cp ./config.toml ~/.hhd/config
 
 make install
 
@@ -26,8 +27,9 @@ hhcli config output json
 hhcli config indent true
 hhcli config trust-node true
 
-hhd gentx --name validator1
+hhd gentx --name validator1 <<< "12345678"
 hhd collect-gentxs
 hhd validate-genesis
 
 hhd start
+
