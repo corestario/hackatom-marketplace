@@ -17,6 +17,10 @@ actor barely wait patrol moral amateur hole clerk misery truly salad wonder arte
 hhd add-genesis-account $(hhcli keys show validator1 -a) 1000token,100000000stake
 hhd add-genesis-account $(hhcli keys show alice -a) 1000token
 
+cp ./config.toml $HOME/.hhd/config/config.toml
+cp ./config.toml $HOME/.hhcli/config/config.toml
+
+
 hhcli config chain-id hhchain
 hhcli config output json
 hhcli config indent true

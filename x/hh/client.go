@@ -162,7 +162,7 @@ type putOnMarketNFTReq struct {
 	BaseReq rest.BaseReq `json:"base_req"`
 	Owner   string       `json:"owner"`
 	Token   BaseNFT      `json:"token"`
-	Price   string       `json:"price"`
+	Price   sdk.Coin     `json:"price"`
 
 	// User data
 	Name     string `json:"name"`
@@ -172,18 +172,81 @@ type putOnMarketNFTReq struct {
 func putNFTokenOnTheMarket(cdc *codec.Codec, cliCtx context.CLIContext) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		var req putOnMarketNFTReq
+		//err:=json.NewDecoder(r.Body).Decode(&req)
+		//fmt.Println("err",err)
 
-		priceInCoins, err := sdk.ParseCoins(req.Price)
+		//fmt.Println("nftToken",nftToken)
+
+		if !rest.ReadRESTReq(w, r, cdc, &req) {
+			rest.WriteErrorResponse(w, http.StatusBadRequest, "failed to parse request")
+			return
+		}
+
+		fmt.Println("---------------------", 2)
+		fmt.Println("reqRef", req)
+		baseReq := req.BaseReq.Sanitize()
+
+		fmt.Println("[[[[[[[[[[[[[reqRef2", req)
+		fmt.Println("[[[[[[[[[[[[[baseReq", baseReq)
+		fmt.Println("reqRef---------------", baseReq.ChainID)
+		if !baseReq.ValidateBasic(w) {
+			return
+		}
+
+		fmt.Println("---------------------", 3)
+
+		addr, err := sdk.AccAddressFromBech32(req.Owner)
 		if err != nil {
 			rest.WriteErrorResponse(w, http.StatusBadRequest, err.Error())
 			return
 		}
 
-		nftToken := NFT{req.Token, true, priceInCoins}
+		fmt.Println("---------------------", 4)
 
-		runPostFunction(w, r, cdc, cliCtx, req.BaseReq, &req, req.Name, req.Password, req.Owner, func(addr sdk.AccAddress) sdk.Msg {
-			return NewMsgPutNFTokenOnTheMarket(nftToken, addr)
-		})
+		nftToken := NFT{req.Token, true, sdk.Coins{req.Price}}
+		// create the message
+		msg := NewMsgPutNFTokenOnTheMarket(nftToken, addr)
+		err = msg.ValidateBasic()
+		if err != nil {
+			rest.WriteErrorResponse(w, http.StatusBadRequest, err.Error())
+			return
+		}
+
+		fmt.Println("---------------------", 5)
+
+		gasAdj, ok := rest.ParseFloat64OrReturnBadRequest(w, baseReq.GasAdjustment, flags.DefaultGasAdjustment)
+		if !ok {
+			return
+		}
+
+		_, gas, err := flags.ParseGas(baseReq.Gas)
+		if err != nil {
+			rest.WriteErrorResponse(w, http.StatusBadRequest, err.Error())
+			return
+		}
+
+		fmt.Println("---------------------", 6)
+
+		txBldr := authtxb.NewTxBuilder(
+			utils.GetTxEncoder(cdc), baseReq.AccountNumber, baseReq.Sequence, gas, gasAdj,
+			baseReq.Simulate, baseReq.ChainID, baseReq.Memo, baseReq.Fees, baseReq.GasPrices,
+		)
+
+		msgBytes, err := txBldr.BuildAndSign(req.Name, req.Password, []sdk.Msg{msg})
+		if err != nil {
+			rest.WriteErrorResponse(w, http.StatusBadRequest, err.Error())
+			return
+		}
+
+		fmt.Println("---------------------", 7)
+
+		_, err = cliCtx.BroadcastTxCommit(msgBytes)
+		if err != nil {
+			rest.WriteErrorResponse(w, http.StatusBadRequest, err.Error())
+			return
+		}
+
+		rest.PostProcessResponse(w, cliCtx, true)
 	}
 }
 
@@ -241,21 +304,31 @@ func runPostFunction(w http.ResponseWriter, r *http.Request, cdc *codec.Codec,
 	name, password, owner string,
 	postFunc func(address sdk.AccAddress) sdk.Msg) {
 
+	fmt.Println("---------------------", 1)
 	if !rest.ReadRESTReq(w, r, cdc, reqRef) {
 		rest.WriteErrorResponse(w, http.StatusBadRequest, "failed to parse request")
 		return
 	}
 
+	fmt.Println("---------------------", 2)
+	fmt.Println("reqRef", reqRef)
 	baseReq = baseReq.Sanitize()
+
+	fmt.Println("[[[[[[[[[[[[[reqRef2", reqRef)
+	fmt.Println("reqRef---------------", baseReq.ChainID)
 	if !baseReq.ValidateBasic(w) {
 		return
 	}
+
+	fmt.Println("---------------------", 3)
 
 	addr, err := sdk.AccAddressFromBech32(owner)
 	if err != nil {
 		rest.WriteErrorResponse(w, http.StatusBadRequest, err.Error())
 		return
 	}
+
+	fmt.Println("---------------------", 4)
 
 	// create the message
 	msg := postFunc(addr)
@@ -264,6 +337,8 @@ func runPostFunction(w http.ResponseWriter, r *http.Request, cdc *codec.Codec,
 		rest.WriteErrorResponse(w, http.StatusBadRequest, err.Error())
 		return
 	}
+
+	fmt.Println("---------------------", 5)
 
 	gasAdj, ok := rest.ParseFloat64OrReturnBadRequest(w, baseReq.GasAdjustment, flags.DefaultGasAdjustment)
 	if !ok {
@@ -276,6 +351,8 @@ func runPostFunction(w http.ResponseWriter, r *http.Request, cdc *codec.Codec,
 		return
 	}
 
+	fmt.Println("---------------------", 6)
+
 	txBldr := authtxb.NewTxBuilder(
 		utils.GetTxEncoder(cdc), baseReq.AccountNumber, baseReq.Sequence, gas, gasAdj,
 		baseReq.Simulate, baseReq.ChainID, baseReq.Memo, baseReq.Fees, baseReq.GasPrices,
@@ -286,6 +363,8 @@ func runPostFunction(w http.ResponseWriter, r *http.Request, cdc *codec.Codec,
 		rest.WriteErrorResponse(w, http.StatusBadRequest, err.Error())
 		return
 	}
+
+	fmt.Println("---------------------", 7)
 
 	_, err = cliCtx.BroadcastTxCommit(msgBytes)
 	if err != nil {

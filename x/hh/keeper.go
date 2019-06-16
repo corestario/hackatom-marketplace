@@ -51,9 +51,9 @@ func (k Keeper) PutNFTokenOnTheMarket(ctx sdk.Context, token NFT, sender sdk.Acc
 		return errors.New("nft has already existed on market")
 	}
 
-	if k.getNFTOwner(ctx, token.ID).Equals(sender) == false {
-		return errors.New("you are not owner of the nft")
-	}
+	//if k.getNFTOwner(ctx, token.ID).Equals(sender) == false {
+	//	return errors.New("you are not owner of the nft")
+	//}
 
 	nftOnSaleBin := k.cdc.MustMarshalBinaryBare(token)
 

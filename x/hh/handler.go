@@ -24,7 +24,9 @@ func NewHandler(keeper Keeper) sdk.Handler {
 }
 
 func handleMsgPutNFTokenOnTheMarket(ctx sdk.Context, keeper Keeper, msg MsgPutNFTokenOnTheMarket) sdk.Result {
+	fmt.Println("--------------------handleMsgPutNFTokenOnTheMarket")
 	err := keeper.PutNFTokenOnTheMarket(ctx, msg.Token, msg.Sender)
+	fmt.Println("--------------------handleMsgPutNFTokenOnTheMarket err", err)
 	if err != nil {
 		return sdk.ErrInternal(err.Error()).Result()
 	}

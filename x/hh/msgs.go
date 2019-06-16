@@ -2,6 +2,7 @@ package hh
 
 import (
 	"encoding/json"
+	"fmt"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
 )
@@ -36,6 +37,7 @@ func (msg MsgPutNFTokenOnTheMarket) Type() string { return "put_token_on_the_mar
 
 // ValidateBasic runs stateless checks on the message
 func (msg MsgPutNFTokenOnTheMarket) ValidateBasic() sdk.Error {
+	fmt.Println("MsgPutNFTokenOnTheMarket", msg)
 	if len(msg.Token.ID) == 0 {
 		return sdk.ErrUnknownRequest("TokenID cannot be empty")
 	}

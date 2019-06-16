@@ -8,16 +8,15 @@ import (
 )
 
 type GenesisState struct {
-	NFTRecords []NFT `json:"nft_records"`
-	AuthData auth.GenesisState   `json:"auth"`
-	BankData bank.GenesisState   `json:"bank"`
-	Accounts []*auth.BaseAccount `json:"accounts"`
+	NFTRecords []NFT               `json:"nft_records"`
+	AuthData   auth.GenesisState   `json:"auth"`
+	BankData   bank.GenesisState   `json:"bank"`
+	Accounts   []*auth.BaseAccount `json:"accounts"`
 }
 
 func NewGenesisState(nftRecords []NFT) GenesisState {
 	return GenesisState{NFTRecords: nftRecords}
 }
-
 
 func ValidateGenesis(data GenesisState) error {
 	for range data.NFTRecords {
