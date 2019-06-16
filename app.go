@@ -13,8 +13,7 @@ import (
 	"github.com/cosmos/cosmos-sdk/x/auth"
 
 	"github.com/cosmos/cosmos-sdk/x/auth/genaccounts"
-
-	"dgamingfoundation/hackathon-hub/x/hh"
+	"github.com/dgamingfoundation/hackatom-marketplace/x/hh"
 
 	"github.com/cosmos/cosmos-sdk/x/bank"
 	distr "github.com/cosmos/cosmos-sdk/x/distribution"

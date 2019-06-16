@@ -13,7 +13,7 @@ import (
 	"github.com/tendermint/tendermint/libs/cli"
 	"github.com/tendermint/tendermint/libs/log"
 
-	app "dgamingfoundation/hackathon-hub"
+	app "github.com/dgamingfoundation/hackatom-marketplace"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	genutilcli "github.com/cosmos/cosmos-sdk/x/genutil/client/cli"

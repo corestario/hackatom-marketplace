@@ -14,7 +14,7 @@ import (
 	"github.com/tendermint/go-amino"
 	"github.com/tendermint/tendermint/libs/cli"
 
-	app "dgamingfoundation/hackathon-hub"
+	app "github.com/dgamingfoundation/hackatom-marketplace"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	authcmd "github.com/cosmos/cosmos-sdk/x/auth/client/cli"
