@@ -151,17 +151,16 @@ func TestPutAndBuyNFT(t *testing.T) {
 
 	nftToSell := NFT{
 		BaseNFT{
-			ID: "1234",
-			Owner: sellerAccount,
-			Name: "dog",
+			ID:          "1234",
+			Owner:       sellerAccount,
+			Name:        "dog",
 			Description: "a wet dog",
-			Image: "some.gif",
-			TokenURI: ".ws",
+			Image:       "some.gif",
+			TokenURI:    ".ws",
 		},
 		false,
 		price,
 	}
-
 
 	k.setNFTOwner(ti.ctx, nftToSell.BaseNFT.ID, sellerAccount)
 
@@ -216,7 +215,6 @@ func TestPutAndBuyNFT(t *testing.T) {
 		t.Fatal(err)
 	}
 
-
 	if !k.coinKeeper.GetCoins(ti.ctx, sellerAccount).IsEqual(price) {
 		t.Fatal("sellerAccount should get nft price")
 	}
@@ -253,54 +251,46 @@ func TestPutAndBuyNFT(t *testing.T) {
 	}
 }
 
-func TestIBC(t *testing.T)  {
+func TestIBC(t *testing.T) {
 	ti1 := setupTestInput()
 	ti2 := setupTestInput()
 	_ = ti2
 
-	clientID1:="clientID1"
+	clientID1 := "clientID1"
 
-	connID:="some conn"
-	cp1:="cp1"
-	cp2:="cp2"
-	id:="123"
+	connID := "some conn"
+	cp1 := "cp1"
+	cp2 := "cp2"
+	id := "123"
 
 	var err error
-	err = ti1.keeper.ibcKeeper.CreateClient(ti1.ctx,clientID1,tendermint.ConsensusState{
+	err = ti1.keeper.ibcKeeper.CreateClient(ti1.ctx, clientID1, tendermint.ConsensusState{
 		ChainID: ti1.chainID,
 	})
-	if err!=nil {
+	if err != nil {
 		t.Fatal(err)
 	}
 
-	err=ti1.keeper.ibcKeeper.OpenConnection(ti1.ctx,clientID1, cp1, clientID1, cp2)
-	if err!=nil {
+	err = ti1.keeper.ibcKeeper.OpenConnection(ti1.ctx, connID, cp1, clientID1, cp2)
+	if err != nil {
 		t.Fatal(err)
 	}
-	err=ti1.keeper.ibcKeeper.OpenChannel(ti1.ctx, ModuleName, connID, id, cp1, cp2)
-	if err!=nil {
+	err = ti1.keeper.ibcKeeper.OpenChannel(ti1.ctx, ModuleName, connID, id, cp1, cp2)
+	if err != nil {
 		t.Fatal(err)
 	}
 
-	/*
-		acc1:=makeAcc()
-		acc2:=makeAcc()
+	//acc1:=makeAcc()
+	//acc2:=makeAcc()
 
-		err=ti1.TransferNFTokenToZone(
-			ti1.ctx,
-			NFT{
-				BaseNFT:BaseNFT{
-						ID:"one",
-					},
-			},
-			"zone1",
-			acc1,
-			acc2,
-			)
-		if err!=nil {
-			t.Fatal(err)
-		}
-	*/
+	packet := NewSendTokenPacket(&BaseNFT{
+		ID: "one",
+	})
+
+	err = ti1.keeper.ibcKeeper.Send(ti1.ctx, connID, id, packet)
+	if err != nil {
+		t.Fatal(err)
+	}
 
 }
 
@@ -325,14 +315,14 @@ func setupTestInput() testInput {
 
 	randomSuffix := string(randomSuffixBytes[:])
 
-	authCapKey := sdk.NewKVStoreKey("authCapKey"+randomSuffix)
-	fckCapKey := sdk.NewKVStoreKey("fckCapKey"+randomSuffix)
-	stKey := sdk.NewKVStoreKey("storeKey"+randomSuffix)
-	ibcKey := sdk.NewKVStoreKey("ibckey"+randomSuffix)
-	feeKey := sdk.NewKVStoreKey("feekey"+randomSuffix)
-	storeKey := sdk.NewKVStoreKey("storeKeyKeeper"+randomSuffix)
-	keyParams := sdk.NewKVStoreKey("params"+randomSuffix)
-	tkeyParams := sdk.NewTransientStoreKey("transient_params"+randomSuffix)
+	authCapKey := sdk.NewKVStoreKey("authCapKey" + randomSuffix)
+	fckCapKey := sdk.NewKVStoreKey("fckCapKey" + randomSuffix)
+	stKey := sdk.NewKVStoreKey("storeKey" + randomSuffix)
+	ibcKey := sdk.NewKVStoreKey("ibckey" + randomSuffix)
+	feeKey := sdk.NewKVStoreKey("feekey" + randomSuffix)
+	storeKey := sdk.NewKVStoreKey("storeKeyKeeper" + randomSuffix)
+	keyParams := sdk.NewKVStoreKey("params" + randomSuffix)
+	tkeyParams := sdk.NewTransientStoreKey("transient_params" + randomSuffix)
 
 	ms := store.NewCommitMultiStore(db)
 	ms.MountStoreWithDB(authCapKey, sdk.StoreTypeIAVL, db)
@@ -345,7 +335,7 @@ func setupTestInput() testInput {
 	ms.MountStoreWithDB(tkeyParams, sdk.StoreTypeTransient, db)
 	ms.LoadLatestVersion()
 
-	chainID := "test-chain-id"+randomSuffix
+	chainID := "test-chain-id" + randomSuffix
 
 	ctx := sdk.NewContext(ms, abci.Header{ChainID: chainID}, false, log.NewNopLogger())
 
@@ -367,7 +357,7 @@ func setupTestInput() testInput {
 		ak,
 		feeCollectionKeeper,
 		storeKey,
-		cdc,)
+		cdc)
 
 	return testInput{cdc: cdc, ctx: ctx, stKey: stKey, keeper: keeper, chainID: chainID}
 }
