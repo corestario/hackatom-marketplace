@@ -10,8 +10,8 @@ import (
 func NewHandler(keeper Keeper) sdk.Handler {
 	return func(ctx sdk.Context, msg sdk.Msg) sdk.Result {
 		switch msg := msg.(type) {
-		case MsgTransferNFTokenToZone:
-			return handleMsgTransferNFTokenToZone(ctx, keeper, msg)
+		case MsgTransferTokenToZone:
+			return handleMsgTransferTokenToZone(ctx, keeper, msg)
 		case MsgPutNFTokenOnTheMarket:
 			return handleMsgPutNFTokenOnTheMarket(ctx, keeper, msg)
 		case MsgBuyNFToken:
@@ -21,16 +21,6 @@ func NewHandler(keeper Keeper) sdk.Handler {
 			return sdk.ErrUnknownRequest(errMsg).Result()
 		}
 	}
-}
-
-func handleMsgTransferNFTokenToZone(ctx sdk.Context, keeper Keeper, msg MsgTransferNFTokenToZone) sdk.Result {
-	nft := keeper.GetNFToken(ctx, msg.TokenID)
-
-	err := keeper.TransferNFTokenToZone(ctx, *nft, msg.ZoneID, msg.Sender, msg.Recipient)
-	if err != nil {
-		return sdk.ErrInternal(err.Error()).Result()
-	}
-	return sdk.Result{}
 }
 
 func handleMsgPutNFTokenOnTheMarket(ctx sdk.Context, keeper Keeper, msg MsgPutNFTokenOnTheMarket) sdk.Result {

@@ -10,58 +10,6 @@ const RouterKey = ModuleName
 
 // --------------------------------------------------------------------------
 //
-// MsgTransferNFTokenToZone
-//
-// --------------------------------------------------------------------------
-
-// MsgTransferNFTokenToZone.
-type MsgTransferNFTokenToZone struct {
-	Sender    sdk.AccAddress
-	Recipient sdk.AccAddress
-	TokenID   string
-	ZoneID    string
-}
-
-// NewMsgTransferNFTokenToZone is a constructor function for MsgTransferNFTokenToZone
-func NewMsgTransferNFTokenToZone(tokenID, zoneID string, sender, recipient sdk.AccAddress) MsgTransferNFTokenToZone {
-	return MsgTransferNFTokenToZone{
-		TokenID:   tokenID,
-		ZoneID:    zoneID,
-		Sender:    sender,
-		Recipient: recipient,
-	}
-}
-
-// Route should return the name of the module
-func (msg MsgTransferNFTokenToZone) Route() string { return RouterKey }
-
-// Type should return the action
-func (msg MsgTransferNFTokenToZone) Type() string { return "transfer_token_to_zone" }
-
-// ValidateBasic runs stateless checks on the message
-func (msg MsgTransferNFTokenToZone) ValidateBasic() sdk.Error {
-	if len(msg.TokenID) == 0 || len(msg.ZoneID) == 0 {
-		return sdk.ErrUnknownRequest("TokenID and/or ZoneID cannot be empty")
-	}
-	return nil
-}
-
-// GetSignBytes encodes the message for signing
-func (msg MsgTransferNFTokenToZone) GetSignBytes() []byte {
-	b, err := json.Marshal(msg)
-	if err != nil {
-		panic(err)
-	}
-	return sdk.MustSortJSON(b)
-}
-
-// GetSigners defines whose signature is required
-func (msg MsgTransferNFTokenToZone) GetSigners() []sdk.AccAddress {
-	return []sdk.AccAddress{msg.Sender}
-}
-
-// --------------------------------------------------------------------------
-//
 // MsgPutNFTokenOnTheMarket
 //
 // --------------------------------------------------------------------------

@@ -3,6 +3,7 @@ package hh
 import (
 	"encoding/json"
 	"fmt"
+	ibc "github.com/cosmos/cosmos-sdk/x/ibc/keeper"
 
 	"github.com/cosmos/cosmos-sdk/client"
 	"github.com/cosmos/cosmos-sdk/client/context"
@@ -56,6 +57,7 @@ type AppModule struct {
 	AppModuleBasic
 	keeper     Keeper
 	coinKeeper bank.Keeper
+	icbKeeper  ibc.Keeper
 }
 
 func (am AppModule) RegisterRESTRoutes(cliCtx context.CLIContext, r *mux.Router) {
@@ -116,11 +118,12 @@ func (AppModuleBasic) GetQueryCmd(*codec.Codec) *cobra.Command {
 }
 
 // NewAppModule creates a new AppModule Object
-func NewAppModule(k Keeper, bankKeeper bank.Keeper) AppModule {
+func NewAppModule(k Keeper, bankKeeper bank.Keeper, icbKeeper ibc.Keeper) AppModule {
 	return AppModule{
 		AppModuleBasic: AppModuleBasic{},
 		keeper:         k,
 		coinKeeper:     bankKeeper,
+		icbKeeper:      icbKeeper,
 	}
 }
 

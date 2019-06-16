@@ -83,9 +83,9 @@ func GetCmdTransferInfo(queryRoute string, cdc *codec.Codec) *cobra.Command {
 
 func GetCmdTransferToken(cdc *codec.Codec) *cobra.Command {
 	return &cobra.Command{
-		Use:   "transfer-token [tokenID] [zoneID] [recipient]",
+		Use:   "transfer-token [tokenID] [zoneID]",
 		Short: "bid for existing name or claim new name",
-		Args:  cobra.ExactArgs(3),
+		Args:  cobra.ExactArgs(2),
 		RunE: func(cmd *cobra.Command, args []string) error {
 			cliCtx := context.NewCLIContext().WithCodec(cdc).WithAccountDecoder(cdc)
 			txBldr := authtxb.NewTxBuilderFromCLI().WithTxEncoder(utils.GetTxEncoder(cdc))
@@ -93,13 +93,8 @@ func GetCmdTransferToken(cdc *codec.Codec) *cobra.Command {
 				return err
 			}
 
-			recipient, err := sdk.AccAddressFromHex(args[2])
-			if err != nil {
-				return fmt.Errorf("failed to parse recipient address: %v", err)
-			}
-
-			msg := NewMsgTransferNFTokenToZone(args[0], args[1], cliCtx.GetFromAddress(), recipient)
-			if err = msg.ValidateBasic(); err != nil {
+			msg := NewMsgTransferTokenToZone(cliCtx.GetFromAddress(), args[0], args[2])
+			if err := msg.ValidateBasic(); err != nil {
 				return err
 			}
 
@@ -219,14 +214,8 @@ func transferNFTokenToZone(cdc *codec.Codec, cliCtx context.CLIContext) http.Han
 	return func(w http.ResponseWriter, r *http.Request) {
 		var req transferNFTReq
 
-		recipient, err := sdk.AccAddressFromBech32(req.Recipient)
-		if err != nil {
-			rest.WriteErrorResponse(w, http.StatusBadRequest, err.Error())
-			return
-		}
-
 		runPostFunction(w, r, cdc, cliCtx, req.BaseReq, &req, req.Name, req.Password, req.Owner, func(sender sdk.AccAddress) sdk.Msg {
-			return NewMsgTransferNFTokenToZone(req.NFTokenID, req.ZoneID, sender, recipient)
+			return NewMsgTransferTokenToZone(sender, req.NFTokenID, req.ZoneID)
 		})
 	}
 }
