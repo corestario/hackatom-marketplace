@@ -45,7 +45,6 @@ func InitGenesis(ctx sdk.Context, keeper Keeper, state GenesisState) []abci.Vali
 	keeper.coinKeeper.SetSendEnabled(ctx, true)
 	keeper.accountKeeper.SetParams(ctx, auth.DefaultParams())
 
-	auth.InitGenesis(ctx, keeper.accountKeeper, keeper.feeCollectionKeeper, state.AuthData)
 	bank.InitGenesis(ctx, keeper.coinKeeper, state.BankData)
 
 	return []abci.ValidatorUpdate{}
