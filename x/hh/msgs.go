@@ -41,9 +41,9 @@ func (msg MsgPutNFTokenOnTheMarket) ValidateBasic() sdk.Error {
 	if len(msg.Token.ID) == 0 {
 		return sdk.ErrUnknownRequest("TokenID cannot be empty")
 	}
-	if !msg.Token.Price.IsAllPositive() {
-		return sdk.ErrUnknownRequest("Token price should be positive")
-	}
+	//if !msg.Token.Price.IsAllPositive() {
+	//	return sdk.ErrUnknownRequest("Token price should be positive")
+	//}
 	return nil
 }
 
@@ -94,9 +94,9 @@ func (msg MsgBuyNFToken) ValidateBasic() sdk.Error {
 	if len(msg.NFTokenID) == 0 {
 		return sdk.ErrUnknownRequest("TokenID cannot be empty")
 	}
-	if !msg.Price.IsAllPositive() {
-		return sdk.ErrUnknownRequest("Token price should be positive")
-	}
+	//if !msg.Price.IsAllPositive() {
+	//	return sdk.ErrUnknownRequest("Token price should be positive")
+	//}
 	return nil
 }
 
