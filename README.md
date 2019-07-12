@@ -32,7 +32,10 @@ Most basic types and service functions are implemented/stubbed according to the 
 
 # Related work
 
-Check out related 
+Check out related:
+
 https://github.com/dgamingfoundation/hackatom-zone
+
 https://github.com/dgamingfoundation/hackatom-relayer
+
 https://github.com/dgamingfoundation/hackatom-relayer
