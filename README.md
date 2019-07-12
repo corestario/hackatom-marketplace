@@ -29,3 +29,10 @@ Most basic types and service functions are implemented/stubbed according to the 
 * Rewrite `./x/hh/client/rest/rest.go`, I haven't removed the `nameservice` code there yet.
 * Add transaction commands to `./x/hh/client/cli/tx.go`, there is only one command implemented.
 * All the Keeper / Handler logic. Search for `// TODO: ` comments throughout the project.  
+
+# Related work
+
+Check out related 
+https://github.com/dgamingfoundation/hackatom-zone
+https://github.com/dgamingfoundation/hackatom-relayer
+https://github.com/dgamingfoundation/hackatom-relayer
